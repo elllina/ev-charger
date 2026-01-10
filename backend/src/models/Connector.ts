@@ -45,7 +45,6 @@ export class Connector extends Model {
   @Column(DataType.ENUM('AC', 'DC'))
   currentType!: 'AC' | 'DC';
 
-  @Index
   @Default('available')
   @Column(DataType.ENUM('available', 'occupied', 'faulted', 'offline', 'reserved'))
   status!: 'available' | 'occupied' | 'faulted' | 'offline' | 'reserved';

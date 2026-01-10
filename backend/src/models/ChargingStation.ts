@@ -48,12 +48,10 @@ export class ChargingStation extends Model {
   @Column(DataType.STRING)
   city!: string;
 
-  @Index
   @AllowNull(false)
   @Column(DataType.DECIMAL(10, 8))
   latitude!: number;
 
-  @Index
   @AllowNull(false)
   @Column(DataType.DECIMAL(11, 8))
   longitude!: number;

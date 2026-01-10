@@ -41,7 +41,7 @@ export class ChargingSession extends Model {
   @Column(DataType.UUID)
   stationId!: string;
 
-  @Index
+  // Note: Index will be created automatically by Sequelize with correct snake_case column name
   @Default('pending')
   @Column(DataType.ENUM('pending', 'active', 'completed', 'failed', 'cancelled'))
   sessionStatus!: 'pending' | 'active' | 'completed' | 'failed' | 'cancelled';

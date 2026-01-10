@@ -26,13 +26,11 @@ export class Favorite extends Model {
 
   @ForeignKey(() => User)
   @AllowNull(false)
-  @Index
   @Column(DataType.UUID)
   userId!: string;
 
   @ForeignKey(() => ChargingStation)
   @AllowNull(false)
-  @Index
   @Column(DataType.UUID)
   stationId!: string;
 

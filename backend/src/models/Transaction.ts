@@ -33,7 +33,6 @@ export class Transaction extends Model {
   @Column(DataType.UUID)
   sessionId?: string;
 
-  @Index
   @AllowNull(false)
   @Column(DataType.ENUM('topup', 'charge', 'refund', 'withdrawal'))
   type!: 'topup' | 'charge' | 'refund' | 'withdrawal';
@@ -66,7 +65,6 @@ export class Transaction extends Model {
   @Column(DataType.JSON)
   metadata?: object;
 
-  @Index
   @CreatedAt
   createdAt!: Date;
 
