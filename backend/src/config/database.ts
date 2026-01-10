@@ -29,11 +29,11 @@ export async function connectDatabase(): Promise<void> {
     await sequelize.authenticate();
     console.log('✅ Database connection established successfully.');
 
-    if (process.env.NODE_ENV === 'development') {
-      // Sync models in development (use migrations in production)
-      await sequelize.sync({ alter: false });
-      console.log('✅ Database models synchronized.');
-    }
+    // Auto-create tables on first deployment
+    // In production, we'll sync once to create tables
+    // Later you should use proper migrations
+    await sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
+    console.log('✅ Database models synchronized.');
   } catch (error) {
     console.error('❌ Unable to connect to the database:', error);
     throw error;
