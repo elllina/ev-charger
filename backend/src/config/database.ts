@@ -17,7 +17,7 @@ export const sequelize = new Sequelize(databaseUrl, {
     idle: 10000,
   },
   define: {
-    underscored: false,
+    underscored: true, // Use snake_case for database columns
     timestamps: true,
   },
 });
@@ -29,11 +29,20 @@ export async function connectDatabase(): Promise<void> {
     await sequelize.authenticate();
     console.log('✅ Database connection established successfully.');
 
-    // Auto-create tables on first deployment
-    // In production, we'll sync once to create tables
-    // Later you should use proper migrations
-    await sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
-    console.log('✅ Database models synchronized.');
+    // Force recreate tables on first deployment to fix column naming
+    // Set FORCE_SYNC=true in Railway to recreate tables
+    // After first successful deployment, remove this env var
+    const forceSync = process.env.FORCE_SYNC === 'true';
+
+    if (forceSync) {
+      console.log('⚠️  FORCE_SYNC enabled - dropping and recreating all tables...');
+      await sequelize.sync({ force: true });
+      console.log('✅ Database tables recreated successfully.');
+    } else {
+      // Auto-create/update tables on deployment
+      await sequelize.sync({ alter: true });
+      console.log('✅ Database models synchronized.');
+    }
   } catch (error) {
     console.error('❌ Unable to connect to the database:', error);
     throw error;
