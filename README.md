@@ -2,6 +2,28 @@
 
 A comprehensive platform that aggregates multiple EV charging networks (EVAN, EcoCars, iCharge, Amperion, ChargeNet) into a unified mobile application for Armenia.
 
+## 🚀 **QUICK START** - Get Running in 3 Steps!
+
+```bash
+# 1. Run the automated setup script
+./start.sh
+
+# OR manually:
+
+# 2. Start Docker services (PostgreSQL + Redis + Backend)
+docker-compose up -d
+
+# 3. Install and seed the database
+cd backend
+npm install
+npm run seed
+npm run dev
+
+# ✅ API is now running at http://localhost:3000
+```
+
+**📖 For detailed setup instructions, see [SETUP_GUIDE.md](SETUP_GUIDE.md)**
+
 ## Project Structure
 
 ```
