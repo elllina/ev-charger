@@ -1,0 +1,14 @@
+# Railway Deployment Trigger
+
+Last deployed: 2026-01-11 14:42 UTC
+Deployment ID: c3c8cfc
+
+## Latest Changes
+- OCPP WebSocket now accepts /ocpp/{chargePointId} paths
+- Fixed 404 errors for charge point connections
+- Added package-lock.json for simulator service
+
+## Services Status
+- Backend API: ✅ OCPP fix deployed
+- Frontend: ✅ Running
+- OCPP Simulator: ⏳ Needs redeploy
