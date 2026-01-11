@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { ChargePoint, ChargePointStatus, StartChargingRequest, StopChargingRequest, RemoteCommandResponse } from '../types';
+import type { ChargePoint, ChargePointStatus, StartChargingRequest, StopChargingRequest, RemoteCommandResponse } from '../types';
 
 /**
  * OCPP API service for controlling charge points

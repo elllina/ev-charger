@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { Station, NearbyStationsParams } from '../types';
+import type { Station, NearbyStationsParams } from '../types';
 
 /**
  * Open Charge Map API service

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
-import { Station } from '../types';
+import type { Station } from '../types';
 import 'leaflet/dist/leaflet.css';
 
 interface StationMapProps {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChargePoint } from '../types';
+import type { ChargePoint } from '../types';
 import { ocppApi } from '../api/ocpp';
 
 interface ChargePointCardProps {

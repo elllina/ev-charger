@@ -3,7 +3,7 @@ import { StationMap } from '../components/StationMap';
 import { ChargePointCard } from '../components/ChargePointCard';
 import { ocmApi } from '../api/ocm';
 import { ocppApi } from '../api/ocpp';
-import { Station, ChargePoint } from '../types';
+import type { Station, ChargePoint } from '../types';
 
 export const Home: React.FC = () => {
   const [stations, setStations] = useState<Station[]>([]);
