@@ -86,7 +86,8 @@ async function startServer(): Promise<void> {
 
     // Initialize OCPP server
     initializeOCPPServer(server);
-    logger.info('OCPP server initialized');
+    logger.info('✅ OCPP server initialized - WebSocket accepts /ocpp/{chargePointId} paths');
+    logger.info('📡 OCPP WebSocket URL: ws://[host]/ocpp/[chargePointId]');
 
     // Start HTTP server
     server.listen(PORT, () => {
