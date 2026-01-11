@@ -47,7 +47,7 @@ export class OCPPServer {
 
       // Only handle /ocpp/* paths
       if (pathname.startsWith('/ocpp')) {
-        this.wss.handleUpgrade(request, socket, head, (ws) => {
+        this.wss.handleUpgrade(request, socket, head, (ws: WebSocket) => {
           this.wss.emit('connection', ws, request);
         });
       } else {
@@ -80,7 +80,7 @@ export class OCPPServer {
       this.chargePoints.delete(chargePointId);
     });
 
-    ws.on('error', (error) => {
+    ws.on('error', (error: Error) => {
       logger.error(`❌ WebSocket error for ${chargePointId}:`, error);
     });
   }
