@@ -38,15 +38,26 @@ export class OCPPServer {
   private pendingRequests: Map<string, (result: any) => void> = new Map();
 
   constructor(server: HTTPServer) {
-    // Create WebSocket server on /ocpp path
-    this.wss = new WebSocketServer({
-      server,
-      path: '/ocpp',
+    // Create WebSocket server with noServer to handle custom paths
+    this.wss = new WebSocketServer({ noServer: true });
+
+    // Handle upgrade manually to support /ocpp/{chargePointId} paths
+    server.on('upgrade', (request, socket, head) => {
+      const pathname = request.url || '';
+
+      // Only handle /ocpp/* paths
+      if (pathname.startsWith('/ocpp')) {
+        this.wss.handleUpgrade(request, socket, head, (ws) => {
+          this.wss.emit('connection', ws, request);
+        });
+      } else {
+        socket.destroy();
+      }
     });
 
     this.wss.on('connection', this.handleConnection.bind(this));
 
-    logger.info('✅ OCPP WebSocket server initialized on /ocpp');
+    logger.info('✅ OCPP WebSocket server initialized on /ocpp/*');
   }
 
   /**
