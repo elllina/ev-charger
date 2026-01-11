@@ -21,6 +21,9 @@ const app: Application = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy for Railway deployment
+app.set('trust proxy', true);
+
 // Middleware
 app.use(helmet()); // Security headers
 app.use(cors({
