@@ -11,6 +11,7 @@ import { redis } from './config/redis';
 import { logger, morganStream } from './config/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { initializeWebSocket } from './websocket';
+import { initializeOCPPServer } from './ocpp/OCPPServer';
 import routes from './routes';
 
 // Load environment variables
@@ -80,11 +81,16 @@ async function startServer(): Promise<void> {
     initializeWebSocket(server);
     logger.info('WebSocket server initialized');
 
+    // Initialize OCPP server
+    initializeOCPPServer(server);
+    logger.info('OCPP server initialized');
+
     // Start HTTP server
     server.listen(PORT, () => {
       logger.info(`🚀 Server is running on port ${PORT}`);
       logger.info(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
       logger.info(`🔗 API: http://localhost:${PORT}/api/v1`);
+      logger.info(`⚡ OCPP WebSocket: ws://localhost:${PORT}/ocpp/{chargePointId}`);
     });
   } catch (error) {
     logger.error('Failed to start server:', error);
