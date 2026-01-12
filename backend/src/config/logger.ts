@@ -37,12 +37,10 @@ export const logger = winston.createLogger({
   ],
 });
 
-// Console transport for development
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: consoleFormat,
-  }));
-}
+// Console transport for all environments (Railway needs this!)
+logger.add(new winston.transports.Console({
+  format: process.env.NODE_ENV === 'production' ? logFormat : consoleFormat,
+}));
 
 // Stream for Morgan HTTP logger
 export const morganStream = {
