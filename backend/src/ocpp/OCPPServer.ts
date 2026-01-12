@@ -47,11 +47,13 @@ export class OCPPServer {
 
       // Only handle /ocpp/* paths, let other handlers process non-OCPP requests
       if (pathname.startsWith('/ocpp')) {
+        console.log(`[OCPP] Handling WebSocket upgrade for path: ${pathname}`);
         this.wss.handleUpgrade(request, socket, head, (ws: WebSocket) => {
           this.wss.emit('connection', ws, request);
         });
+        return; // Stop event propagation to prevent Socket.io from processing this
       }
-      // Don't destroy socket - let Socket.io and other upgrade handlers process it
+      // Let Socket.io and other upgrade handlers process non-OCPP requests
     });
 
     this.wss.on('connection', this.handleConnection.bind(this));

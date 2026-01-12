@@ -10,6 +10,7 @@ export class WebSocketServer {
 
   constructor(httpServer: HTTPServer) {
     this.io = new Server(httpServer, {
+      path: '/socket.io', // Explicit path to avoid conflicts with OCPP WebSocket
       cors: {
         origin: process.env.CORS_ORIGIN || '*',
         methods: ['GET', 'POST'],
@@ -20,7 +21,7 @@ export class WebSocketServer {
     this.setupMiddleware();
     this.setupEventHandlers();
 
-    logger.info('WebSocket server initialized');
+    logger.info('WebSocket server initialized on /socket.io');
   }
 
   /**
