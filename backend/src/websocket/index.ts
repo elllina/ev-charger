@@ -10,7 +10,7 @@ export class WebSocketServer {
 
   constructor(httpServer: HTTPServer) {
     this.io = new Server(httpServer, {
-      path: '/socket.io', // Explicit path to avoid conflicts with OCPP WebSocket
+      path: '/socket.io',
       cors: {
         origin: process.env.CORS_ORIGIN || '*',
         methods: ['GET', 'POST'],

@@ -80,14 +80,45 @@ async function startServer(): Promise<void> {
     await redis.ping();
     logger.info('Redis connected successfully');
 
-    // Initialize OCPP server FIRST (before Socket.io to handle /ocpp/* paths)
-    initializeOCPPServer(server);
+    // Initialize Socket.io first to let it register its handlers
+    const wsServer = initializeWebSocket(server);
+    logger.info('WebSocket server initialized');
+
+    // Initialize OCPP server
+    const ocppServer = initializeOCPPServer(server);
     logger.info('✅ OCPP server initialized - WebSocket accepts /ocpp/{chargePointId} paths');
     logger.info('📡 OCPP WebSocket URL: ws://[host]/ocpp/[chargePointId]');
 
-    // Initialize WebSocket (Socket.io) AFTER OCPP
-    initializeWebSocket(server);
-    logger.info('WebSocket server initialized');
+    // Remove all existing upgrade listeners
+    const existingListeners = server.listeners('upgrade');
+    server.removeAllListeners('upgrade');
+
+    // Register master upgrade handler that routes to the correct handler
+    server.on('upgrade', (request, socket, head) => {
+      const pathname = request.url || '';
+      console.log(`[WebSocket] Upgrade request for path: ${pathname}`);
+
+      // Route OCPP WebSocket connections to OCPP handler
+      if (pathname.startsWith('/ocpp/')) {
+        console.log(`[WebSocket] Routing to OCPP handler`);
+        ocppServer.handleUpgrade(request, socket, head);
+        return;
+      }
+
+      // Route Socket.io connections back to Socket.io's original handler
+      if (pathname.startsWith('/socket.io/')) {
+        console.log(`[WebSocket] Routing to Socket.io handler`);
+        for (const listener of existingListeners) {
+          listener.call(server, request, socket, head);
+        }
+        return;
+      }
+
+      // Reject all other WebSocket connections
+      console.log(`[WebSocket] Rejecting unknown path: ${pathname}`);
+      socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+      socket.destroy();
+    });
 
     // Start HTTP server
     server.listen(PORT, () => {

@@ -41,24 +41,23 @@ export class OCPPServer {
     // Create WebSocket server with noServer to handle custom paths
     this.wss = new WebSocketServer({ noServer: true });
 
-    // Handle upgrade manually to support /ocpp/{chargePointId} paths
-    server.on('upgrade', (request, socket, head) => {
-      const pathname = request.url || '';
-
-      // Only handle /ocpp/* paths, let other handlers process non-OCPP requests
-      if (pathname.startsWith('/ocpp')) {
-        console.log(`[OCPP] Handling WebSocket upgrade for path: ${pathname}`);
-        this.wss.handleUpgrade(request, socket, head, (ws: WebSocket) => {
-          this.wss.emit('connection', ws, request);
-        });
-        return; // Stop event propagation to prevent Socket.io from processing this
-      }
-      // Let Socket.io and other upgrade handlers process non-OCPP requests
-    });
+    // NOTE: Upgrade handler is registered in index.ts to control routing priority
 
     this.wss.on('connection', this.handleConnection.bind(this));
 
     logger.info('✅ OCPP WebSocket server initialized on /ocpp/*');
+  }
+
+  /**
+   * Handle WebSocket upgrade for OCPP paths
+   */
+  public handleUpgrade(request: any, socket: any, head: any): void {
+    const pathname = request.url || '';
+    console.log(`[OCPP] Handling WebSocket upgrade for path: ${pathname}`);
+
+    this.wss.handleUpgrade(request, socket, head, (ws: WebSocket) => {
+      this.wss.emit('connection', ws, request);
+    });
   }
 
   /**
