@@ -80,14 +80,14 @@ async function startServer(): Promise<void> {
     await redis.ping();
     logger.info('Redis connected successfully');
 
-    // Initialize WebSocket
-    initializeWebSocket(server);
-    logger.info('WebSocket server initialized');
-
-    // Initialize OCPP server
+    // Initialize OCPP server FIRST (before Socket.io to handle /ocpp/* paths)
     initializeOCPPServer(server);
     logger.info('✅ OCPP server initialized - WebSocket accepts /ocpp/{chargePointId} paths');
     logger.info('📡 OCPP WebSocket URL: ws://[host]/ocpp/[chargePointId]');
+
+    // Initialize WebSocket (Socket.io) AFTER OCPP
+    initializeWebSocket(server);
+    logger.info('WebSocket server initialized');
 
     // Start HTTP server
     server.listen(PORT, () => {
