@@ -63,6 +63,18 @@ app.get('/', (req, res) => {
   });
 });
 
+// Socket.io HTTP handler placeholder (will be set in startServer)
+let socketioHandler: any = null;
+
+app.use((req, res, next) => {
+  if (req.url.startsWith('/socket.io/') && socketioHandler) {
+    console.log(`[Socket.io] HTTP request: ${req.method} ${req.url}`);
+    socketioHandler(req, res);
+  } else {
+    next();
+  }
+});
+
 // 404 handler
 app.use(notFoundHandler);
 
@@ -80,42 +92,49 @@ async function startServer(): Promise<void> {
     await redis.ping();
     logger.info('Redis connected successfully');
 
-    // Initialize Socket.io first to let it register its handlers
-    const wsServer = initializeWebSocket(server);
-    logger.info('WebSocket server initialized');
+    // Initialize Socket.io in noServer mode
+    const wsServer = initializeWebSocket();
+    logger.info('Socket.io initialized (noServer mode)');
 
-    // Initialize OCPP server
+    // Set the Socket.io handler for HTTP requests
+    socketioHandler = (req: any, res: any) => wsServer.handleRequest(req, res);
+
+    // Initialize OCPP server in noServer mode
     const ocppServer = initializeOCPPServer(server);
-    logger.info('✅ OCPP server initialized - WebSocket accepts /ocpp/{chargePointId} paths');
+    logger.info('✅ OCPP WebSocket server initialized');
     logger.info('📡 OCPP WebSocket URL: ws://[host]/ocpp/[chargePointId]');
 
-    // Remove all existing upgrade listeners
-    const existingListeners = server.listeners('upgrade');
-    server.removeAllListeners('upgrade');
-
-    // Register master upgrade handler that routes to the correct handler
+    // Register WebSocket upgrade handler
     server.on('upgrade', (request, socket, head) => {
       const pathname = request.url || '';
-      console.log(`[WebSocket] Upgrade request for path: ${pathname}`);
+      console.log(`[UPGRADE] Request for path: ${pathname}`);
 
-      // Route OCPP WebSocket connections to OCPP handler
+      // Route OCPP WebSocket connections
       if (pathname.startsWith('/ocpp/')) {
-        console.log(`[WebSocket] Routing to OCPP handler`);
-        ocppServer.handleUpgrade(request, socket, head);
-        return;
-      }
-
-      // Route Socket.io connections back to Socket.io's original handler
-      if (pathname.startsWith('/socket.io/')) {
-        console.log(`[WebSocket] Routing to Socket.io handler`);
-        for (const listener of existingListeners) {
-          listener.call(server, request, socket, head);
+        console.log(`[UPGRADE] → Routing to OCPP handler`);
+        try {
+          ocppServer.handleUpgrade(request, socket, head);
+        } catch (error) {
+          console.error(`[UPGRADE] OCPP upgrade error:`, error);
+          socket.destroy();
         }
         return;
       }
 
-      // Reject all other WebSocket connections
-      console.log(`[WebSocket] Rejecting unknown path: ${pathname}`);
+      // Route Socket.io WebSocket upgrades
+      if (pathname.startsWith('/socket.io/')) {
+        console.log(`[UPGRADE] → Routing to Socket.io handler`);
+        try {
+          wsServer.handleUpgrade(request, socket, head);
+        } catch (error) {
+          console.error(`[UPGRADE] Socket.io upgrade error:`, error);
+          socket.destroy();
+        }
+        return;
+      }
+
+      // Reject all other WebSocket upgrade requests
+      console.log(`[UPGRADE] → Rejected (unknown path: ${pathname})`);
       socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
       socket.destroy();
     });
@@ -126,6 +145,7 @@ async function startServer(): Promise<void> {
       logger.info(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
       logger.info(`🔗 API: http://localhost:${PORT}/api/v1`);
       logger.info(`⚡ OCPP WebSocket: ws://localhost:${PORT}/ocpp/{chargePointId}`);
+      logger.info(`📱 Socket.io: ws://localhost:${PORT}/socket.io/`);
     });
   } catch (error) {
     logger.error('Failed to start server:', error);

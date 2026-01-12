@@ -8,8 +8,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 export class WebSocketServer {
   private io: Server;
 
-  constructor(httpServer: HTTPServer) {
-    this.io = new Server(httpServer, {
+  constructor() {
+    // Create Socket.io server WITHOUT attaching to HTTP server (noServer mode)
+    this.io = new Server({
       path: '/socket.io',
       cors: {
         origin: process.env.CORS_ORIGIN || '*',
@@ -21,7 +22,22 @@ export class WebSocketServer {
     this.setupMiddleware();
     this.setupEventHandlers();
 
-    logger.info('WebSocket server initialized on /socket.io');
+    logger.info('Socket.io server created (noServer mode)');
+  }
+
+  /**
+   * Handle HTTP upgrade to WebSocket for Socket.io
+   */
+  public handleUpgrade(request: any, socket: any, head: any): void {
+    console.log('[Socket.io] Handling upgrade request');
+    this.io.engine.handleUpgrade(request, socket, head);
+  }
+
+  /**
+   * Handle HTTP request for Socket.io polling
+   */
+  public handleRequest(request: any, response: any): void {
+    this.io.engine.handleRequest(request, response);
   }
 
   /**
@@ -152,8 +168,8 @@ export class WebSocketServer {
 
 let wsServer: WebSocketServer | null = null;
 
-export function initializeWebSocket(httpServer: HTTPServer): WebSocketServer {
-  wsServer = new WebSocketServer(httpServer);
+export function initializeWebSocket(): WebSocketServer {
+  wsServer = new WebSocketServer();
   return wsServer;
 }
 
