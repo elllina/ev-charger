@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize-typescript';
 import dotenv from 'dotenv';
-import { initializeDatabase } from '../models';
+import { initializeDatabase } from '../models/index';
 
 dotenv.config();
 
@@ -22,10 +22,11 @@ export const sequelize = new Sequelize(databaseUrl, {
   },
 });
 
-initializeDatabase(sequelize);
-
 export async function connectDatabase(): Promise<void> {
   try {
+    // Initialize models before connecting
+    initializeDatabase(sequelize);
+
     await sequelize.authenticate();
     console.log('✅ Database connection established successfully.');
 
