@@ -73,24 +73,21 @@ export interface NearbyStationsParams {
 }
 
 export interface FormattedStation {
-  ocmId: number;
+  id: string;
   name: string;
   address: string;
   city: string;
   country: string;
   latitude: number;
   longitude: number;
-  distance: number;
-  operator: string | null;
-  numberOfConnectors: number;
-  isOperational: boolean;
+  distance?: number;
+  operatorName?: string;
   connectors: Array<{
-    id: number;
+    id: string;
     type: string;
-    powerKw: number;
-    currentType: string;
-    status: string;
-    isAvailable: boolean;
+    powerKW?: number;
+    available: boolean;
+    status?: string;
   }>;
 }
 
@@ -159,24 +156,21 @@ export class OpenChargeMapService {
    */
   private formatStation(ocmStation: OCMStation): FormattedStation {
     return {
-      ocmId: ocmStation.ID,
-      name: ocmStation.AddressInfo.Title || `Station ${ocmStation.ID}`,
-      address: ocmStation.AddressInfo.AddressLine1 || '',
-      city: ocmStation.AddressInfo.Town || '',
-      country: ocmStation.AddressInfo.Country.Title,
-      latitude: ocmStation.AddressInfo.Latitude,
-      longitude: ocmStation.AddressInfo.Longitude,
-      distance: ocmStation.AddressInfo.Distance || 0,
-      operator: ocmStation.OperatorInfo?.Title || null,
-      numberOfConnectors: ocmStation.NumberOfPoints || 0,
-      isOperational: ocmStation.StatusType?.IsOperational !== false,
+      id: String(ocmStation.ID),
+      name: ocmStation.AddressInfo?.Title || `Station ${ocmStation.ID}`,
+      address: ocmStation.AddressInfo?.AddressLine1 || '',
+      city: ocmStation.AddressInfo?.Town || '',
+      country: ocmStation.AddressInfo?.Country?.Title || '',
+      latitude: ocmStation.AddressInfo?.Latitude || 0,
+      longitude: ocmStation.AddressInfo?.Longitude || 0,
+      distance: ocmStation.AddressInfo?.Distance,
+      operatorName: ocmStation.OperatorInfo?.Title,
       connectors: (ocmStation.Connections || []).map(conn => ({
-        id: conn.ID,
+        id: String(conn.ID),
         type: conn.ConnectionType?.FormalName || conn.ConnectionType?.Title || 'Unknown',
-        powerKw: conn.PowerKW || 0,
-        currentType: conn.CurrentType?.Title || 'Unknown',
-        status: conn.StatusType?.Title || 'Unknown',
-        isAvailable: conn.StatusType?.IsOperational !== false,
+        powerKW: conn.PowerKW || undefined,
+        available: conn.StatusType?.IsOperational !== false,
+        status: conn.StatusType?.Title,
       })),
     };
   }

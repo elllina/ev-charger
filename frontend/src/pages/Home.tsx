@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { StationMap } from '../components/StationMap';
 import { ChargePointCard } from '../components/ChargePointCard';
 import { ocmApi } from '../api/ocm';
@@ -16,46 +16,59 @@ export const Home: React.FC = () => {
   const [longitude, setLongitude] = useState(44.5152);
   const [radius, setRadius] = useState(50);
 
-  const fetchStations = async () => {
+  // Track if initial load has happened
+  const initialLoadDone = useRef(false);
+
+  const fetchStations = useCallback(async (lat: number, lng: number, rad: number) => {
     try {
       const data = await ocmApi.getNearbyStations({
-        latitude,
-        longitude,
-        radius,
+        latitude: lat,
+        longitude: lng,
+        radius: rad,
         maxResults: 50,
       });
       setStations(data);
-    } catch (err: any) {
+      setError(null);
+    } catch (err: unknown) {
       console.error('Error fetching stations:', err);
-      setError('Failed to load charging stations');
+      setError('Failed to load charging stations. Please try again.');
     }
-  };
+  }, []);
 
-  const fetchChargePoints = async () => {
+  const fetchChargePoints = useCallback(async () => {
     try {
       const data = await ocppApi.getChargePoints();
       setChargePoints(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      // Silently handle charge point errors - they may not be available
       console.error('Error fetching charge points:', err);
+      setChargePoints([]);
     }
-  };
+  }, []);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async (lat: number, lng: number, rad: number) => {
     setLoading(true);
     setError(null);
 
-    await Promise.all([fetchStations(), fetchChargePoints()]);
+    await Promise.all([
+      fetchStations(lat, lng, rad),
+      fetchChargePoints()
+    ]);
 
     setLoading(false);
-  };
+  }, [fetchStations, fetchChargePoints]);
 
+  // Initial load only
   useEffect(() => {
-    fetchData();
-  }, [latitude, longitude, radius]);
+    if (!initialLoadDone.current) {
+      initialLoadDone.current = true;
+      fetchData(latitude, longitude, radius);
+    }
+  }, [fetchData, latitude, longitude, radius]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchData();
+    fetchData(latitude, longitude, radius);
   };
 
   if (loading) {
