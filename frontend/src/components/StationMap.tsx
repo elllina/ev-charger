@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { Icon } from 'leaflet';
+import { useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { Icon, type LatLngExpression } from 'leaflet';
 import type { Station } from '../types';
 import 'leaflet/dist/leaflet.css';
 
@@ -21,25 +21,32 @@ const defaultIcon = new Icon({
   shadowSize: [41, 41],
 });
 
-export const StationMap: React.FC<StationMapProps> = ({
-  stations,
-  center = [40.1872, 44.5152], // Yerevan, Armenia
-  zoom = 12,
-}) => {
-  const [mapCenter, setMapCenter] = useState<[number, number]>(center);
+// Component to handle map centering
+function MapCenterController({ center, stations }: { center: LatLngExpression; stations: Station[] }) {
+  const map = useMap();
 
   useEffect(() => {
     if (stations.length > 0) {
       // Center map on first station if available
       const firstStation = stations[0];
-      setMapCenter([firstStation.latitude, firstStation.longitude]);
+      map.setView([firstStation.latitude, firstStation.longitude], map.getZoom());
+    } else {
+      map.setView(center, map.getZoom());
     }
-  }, [stations]);
+  }, [map, center, stations]);
 
+  return null;
+}
+
+export const StationMap: React.FC<StationMapProps> = ({
+  stations,
+  center = [40.1872, 44.5152], // Yerevan, Armenia
+  zoom = 12,
+}) => {
   return (
     <div style={{ height: '600px', width: '100%' }}>
       <MapContainer
-        center={mapCenter}
+        center={center}
         zoom={zoom}
         style={{ height: '100%', width: '100%' }}
       >
@@ -47,6 +54,7 @@ export const StationMap: React.FC<StationMapProps> = ({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <MapCenterController center={center} stations={stations} />
         {stations.map((station) => (
           <Marker
             key={station.id}
@@ -57,7 +65,7 @@ export const StationMap: React.FC<StationMapProps> = ({
               <div>
                 <h3 style={{ margin: '0 0 8px 0' }}>{station.name}</h3>
                 <p style={{ margin: '4px 0' }}>
-                  <strong>Address:</strong> {station.address}
+                  <strong>Address:</strong> {station.address || 'N/A'}
                 </p>
                 {station.city && (
                   <p style={{ margin: '4px 0' }}>
@@ -69,23 +77,25 @@ export const StationMap: React.FC<StationMapProps> = ({
                     <strong>Operator:</strong> {station.operatorName}
                   </p>
                 )}
-                {station.distance && (
+                {station.distance !== undefined && station.distance !== null && (
                   <p style={{ margin: '4px 0' }}>
                     <strong>Distance:</strong> {station.distance.toFixed(2)} km
                   </p>
                 )}
-                <div style={{ marginTop: '8px' }}>
-                  <strong>Connectors:</strong>
-                  <ul style={{ margin: '4px 0', paddingLeft: '20px' }}>
-                    {station.connectors.map((connector, idx) => (
-                      <li key={idx}>
-                        {connector.type}
-                        {connector.powerKW && ` - ${connector.powerKW} kW`}
-                        {connector.status && ` (${connector.status})`}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {station.connectors && station.connectors.length > 0 && (
+                  <div style={{ marginTop: '8px' }}>
+                    <strong>Connectors:</strong>
+                    <ul style={{ margin: '4px 0', paddingLeft: '20px' }}>
+                      {station.connectors.map((connector) => (
+                        <li key={connector.id}>
+                          {connector.type}
+                          {connector.powerKW && ` - ${connector.powerKW} kW`}
+                          {connector.status && ` (${connector.status})`}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </Popup>
           </Marker>

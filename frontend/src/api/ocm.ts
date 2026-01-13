@@ -25,8 +25,8 @@ export const ocmApi = {
    * Search stations by country
    */
   getStationsByCountry: async (countryCode: string, maxResults: number = 50): Promise<Station[]> => {
-    const response = await apiClient.get('/ocm/country', {
-      params: { countryCode, maxResults },
+    const response = await apiClient.get(`/ocm/country/${countryCode}`, {
+      params: { maxResults },
     });
     return response.data.stations || [];
   },
@@ -35,7 +35,7 @@ export const ocmApi = {
    * Get station details by ID
    */
   getStationById: async (id: string): Promise<Station> => {
-    const response = await apiClient.get(`/ocm/stations/${id}`);
+    const response = await apiClient.get(`/ocm/station/${id}`);
     return response.data.station;
   },
 };
