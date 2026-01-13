@@ -8,36 +8,40 @@ import { AppError } from '../middleware/errorHandler';
 export class OCMController {
   /**
    * Get nearby charging stations from Open Charge Map
-   * GET /api/v1/ocm/nearby?lat=40.1872&lng=44.5152&radius=10
+   * GET /api/v1/ocm/nearby?latitude=40.1872&longitude=44.5152&radius=10
    */
   async getNearbyStations(req: Request, res: Response): Promise<void> {
     try {
-      const { lat, lng, radius, maxResults, countryCode, minPowerKW, connectionType } = req.query;
+      const { latitude, longitude, lat, lng, radius, maxResults, countryCode, minPowerKW, connectionType } = req.query;
+
+      // Support both lat/lng and latitude/longitude formats
+      const latParam = latitude || lat;
+      const lngParam = longitude || lng;
 
       // Validate required parameters
-      if (!lat || !lng) {
+      if (!latParam || !lngParam) {
         throw new AppError('Latitude and longitude are required', 400);
       }
 
-      const latitude = parseFloat(lat as string);
-      const longitude = parseFloat(lng as string);
+      const latitudeValue = parseFloat(latParam as string);
+      const longitudeValue = parseFloat(lngParam as string);
 
-      if (isNaN(latitude) || isNaN(longitude)) {
+      if (isNaN(latitudeValue) || isNaN(longitudeValue)) {
         throw new AppError('Invalid latitude or longitude', 400);
       }
 
       // Validate ranges
-      if (latitude < -90 || latitude > 90) {
+      if (latitudeValue < -90 || latitudeValue > 90) {
         throw new AppError('Latitude must be between -90 and 90', 400);
       }
 
-      if (longitude < -180 || longitude > 180) {
+      if (longitudeValue < -180 || longitudeValue > 180) {
         throw new AppError('Longitude must be between -180 and 180', 400);
       }
 
       const stations = await OpenChargeMapService.getNearbyStations({
-        latitude,
-        longitude,
+        latitude: latitudeValue,
+        longitude: longitudeValue,
         radiusKm: radius ? parseFloat(radius as string) : 10,
         maxResults: maxResults ? parseInt(maxResults as string) : 50,
         countryCode: countryCode as string,
@@ -50,8 +54,8 @@ export class OCMController {
         count: stations.length,
         source: 'Open Charge Map',
         query: {
-          latitude,
-          longitude,
+          latitude: latitudeValue,
+          longitude: longitudeValue,
           radius: radius ? parseFloat(radius as string) : 10,
         },
         stations,
