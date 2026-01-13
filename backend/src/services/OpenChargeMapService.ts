@@ -137,17 +137,29 @@ export class OpenChargeMapService {
 
       const response = await axios.get(`${OCM_API_BASE}/poi`, {
         params: queryParams,
-        timeout: 10000,
+        timeout: 15000,
       });
 
-      const stations: OCMStation[] = response.data;
+      // Handle case where API returns non-array data
+      if (!response.data) {
+        logger.warn('OCM API returned empty response');
+        return [];
+      }
+
+      // Ensure we have an array
+      const stations: OCMStation[] = Array.isArray(response.data) ? response.data : [];
 
       logger.info(`OCM returned ${stations.length} stations`);
 
-      return stations.map(station => this.formatStation(station));
-    } catch (error) {
-      logger.error('Error fetching from Open Charge Map:', error);
-      throw new Error('Failed to fetch charging stations from Open Charge Map');
+      // Filter out any invalid stations and format them safely
+      return stations
+        .filter(station => station && station.ID != null)
+        .map(station => this.formatStation(station));
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error(`Error fetching from Open Charge Map: ${errorMessage}`);
+      // Return empty array instead of throwing to prevent 500 errors
+      return [];
     }
   }
 
@@ -155,23 +167,28 @@ export class OpenChargeMapService {
    * Format OCM station data to our schema
    */
   private formatStation(ocmStation: OCMStation): FormattedStation {
+    const addressInfo = ocmStation.AddressInfo || {};
+    const connections = ocmStation.Connections || [];
+
     return {
-      id: String(ocmStation.ID),
-      name: ocmStation.AddressInfo?.Title || `Station ${ocmStation.ID}`,
-      address: ocmStation.AddressInfo?.AddressLine1 || '',
-      city: ocmStation.AddressInfo?.Town || '',
-      country: ocmStation.AddressInfo?.Country?.Title || '',
-      latitude: ocmStation.AddressInfo?.Latitude || 0,
-      longitude: ocmStation.AddressInfo?.Longitude || 0,
-      distance: ocmStation.AddressInfo?.Distance,
+      id: String(ocmStation.ID ?? 'unknown'),
+      name: addressInfo.Title || `Station ${ocmStation.ID ?? 'Unknown'}`,
+      address: addressInfo.AddressLine1 || '',
+      city: addressInfo.Town || '',
+      country: addressInfo.Country?.Title || '',
+      latitude: typeof addressInfo.Latitude === 'number' ? addressInfo.Latitude : 0,
+      longitude: typeof addressInfo.Longitude === 'number' ? addressInfo.Longitude : 0,
+      distance: typeof addressInfo.Distance === 'number' ? addressInfo.Distance : undefined,
       operatorName: ocmStation.OperatorInfo?.Title,
-      connectors: (ocmStation.Connections || []).map(conn => ({
-        id: String(conn.ID),
-        type: conn.ConnectionType?.FormalName || conn.ConnectionType?.Title || 'Unknown',
-        powerKW: conn.PowerKW || undefined,
-        available: conn.StatusType?.IsOperational !== false,
-        status: conn.StatusType?.Title,
-      })),
+      connectors: connections
+        .filter(conn => conn && conn.ID != null)
+        .map(conn => ({
+          id: String(conn.ID),
+          type: conn.ConnectionType?.FormalName || conn.ConnectionType?.Title || 'Unknown',
+          powerKW: typeof conn.PowerKW === 'number' && conn.PowerKW > 0 ? conn.PowerKW : undefined,
+          available: conn.StatusType?.IsOperational !== false,
+          status: conn.StatusType?.Title,
+        })),
     };
   }
 
@@ -201,18 +218,24 @@ export class OpenChargeMapService {
           chargepointid: ocmId,
           compact: false,
         },
-        timeout: 5000,
+        timeout: 10000,
       });
+
+      // Handle case where API returns non-array data
+      if (!response.data || !Array.isArray(response.data)) {
+        return null;
+      }
 
       const stations: OCMStation[] = response.data;
 
-      if (stations.length === 0) {
+      if (stations.length === 0 || !stations[0] || stations[0].ID == null) {
         return null;
       }
 
       return this.formatStation(stations[0]);
-    } catch (error) {
-      logger.error(`Error fetching OCM station ${ocmId}:`, error);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error(`Error fetching OCM station ${ocmId}: ${errorMessage}`);
       return null;
     }
   }
@@ -231,11 +254,20 @@ export class OpenChargeMapService {
         timeout: 15000,
       });
 
-      const stations: OCMStation[] = response.data;
-      return stations.map(station => this.formatStation(station));
-    } catch (error) {
-      logger.error(`Error fetching stations for country ${countryCode}:`, error);
-      throw new Error('Failed to fetch stations by country');
+      // Handle case where API returns non-array data
+      if (!response.data) {
+        logger.warn(`OCM API returned empty response for country ${countryCode}`);
+        return [];
+      }
+
+      const stations: OCMStation[] = Array.isArray(response.data) ? response.data : [];
+      return stations
+        .filter(station => station && station.ID != null)
+        .map(station => this.formatStation(station));
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error(`Error fetching stations for country ${countryCode}: ${errorMessage}`);
+      return [];
     }
   }
 }
