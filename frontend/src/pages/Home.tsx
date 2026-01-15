@@ -14,7 +14,7 @@ export const Home: React.FC = () => {
   // Yerevan, Armenia coordinates
   const [latitude, setLatitude] = useState(40.1872);
   const [longitude, setLongitude] = useState(44.5152);
-  const [radius, setRadius] = useState(50);
+  const [radius, setRadius] = useState(200);
 
   // Track if initial load has happened
   const initialLoadDone = useRef(false);
