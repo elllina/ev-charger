@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import { Icon, type LatLngExpression } from 'leaflet';
+import { DivIcon, type LatLngExpression } from 'leaflet';
 import type { Station } from '../types';
 import 'leaflet/dist/leaflet.css';
 
@@ -10,16 +10,36 @@ interface StationMapProps {
   zoom?: number;
 }
 
-// Fix for default marker icon
-const defaultIcon = new Icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
+// Custom EV charger icon using SVG
+const createEvIcon = (available: boolean) => {
+  const color = available ? '#22c55e' : '#ef4444'; // green or red
+  const bgColor = available ? '#dcfce7' : '#fee2e2';
+
+  return new DivIcon({
+    className: 'ev-marker',
+    html: `
+      <div style="
+        width: 36px;
+        height: 36px;
+        background: ${bgColor};
+        border: 3px solid ${color};
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      ">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="${color}">
+          <path d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v16h10v-7.5h1.5v5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V9c0-.69-.28-1.32-.73-1.77zM12 13.5V19H6v-7h6v1.5zm0-3.5H6V5h6v5z"/>
+        </svg>
+      </div>
+    `,
+    iconSize: [36, 36],
+    iconAnchor: [18, 18],
+    popupAnchor: [0, -18],
+  });
+};
+
 
 // Component to handle map centering
 function MapCenterController({ center, stations }: { center: LatLngExpression; stations: Station[] }) {
@@ -55,11 +75,14 @@ export const StationMap: React.FC<StationMapProps> = ({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <MapCenterController center={center} stations={stations} />
-        {stations.map((station) => (
+        {stations.map((station) => {
+          // Check if any connector is available
+          const hasAvailable = station.connectors?.some(c => c.available) ?? true;
+          return (
           <Marker
             key={station.id}
             position={[station.latitude, station.longitude]}
-            icon={defaultIcon}
+            icon={createEvIcon(hasAvailable)}
           >
             <Popup>
               <div>
@@ -99,7 +122,8 @@ export const StationMap: React.FC<StationMapProps> = ({
               </div>
             </Popup>
           </Marker>
-        ))}
+        );
+        })}
       </MapContainer>
     </div>
   );
