@@ -6,7 +6,7 @@
 const WebSocket = require('ws');
 
 // Configuration from environment variables
-const BACKEND_URL = process.env.OCPP_BACKEND_URL || 'wss://ev-charging-api-production.up.railway.app/ocpp';
+const BACKEND_URL = process.env.OCPP_BACKEND_URL || 'wss://ev-charging-api-production-34a9.up.railway.app/ocpp';
 const NUM_CHARGERS = parseInt(process.env.NUM_CHARGERS || '3');
 const CHARGER_PREFIX = process.env.CHARGER_PREFIX || 'DEMO-CP';
 
