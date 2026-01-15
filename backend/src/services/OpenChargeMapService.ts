@@ -100,9 +100,9 @@ export class OpenChargeMapService {
       const {
         latitude,
         longitude,
-        radiusKm = 10,
+        radiusKm = 50, // Increased default radius
         maxResults = 50,
-        countryCode = 'AM', // Default to Armenia
+        countryCode, // No default - search worldwide
         minPowerKW,
         connectionType,
       } = params;
