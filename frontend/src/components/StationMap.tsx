@@ -1,19 +1,30 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { DivIcon, type LatLngExpression } from 'leaflet';
-import type { Station } from '../types';
+import type { Station, Connector, ChargingSession } from '../types';
 import 'leaflet/dist/leaflet.css';
 
 interface StationMapProps {
   stations: Station[];
   center?: [number, number];
   zoom?: number;
+  activeSessions?: Map<string, ChargingSession>;
+  onStartCharging?: (station: Station, connector: Connector) => void;
+  onStopCharging?: (stationId: string) => void;
 }
 
 // Custom EV charger icon using SVG
-const createEvIcon = (available: boolean) => {
-  const color = available ? '#22c55e' : '#ef4444'; // green or red
-  const bgColor = available ? '#dcfce7' : '#fee2e2';
+const createEvIcon = (available: boolean, isCharging: boolean) => {
+  let color = '#22c55e'; // green - available
+  let bgColor = '#dcfce7';
+
+  if (isCharging) {
+    color = '#f59e0b'; // orange - charging
+    bgColor = '#fef3c7';
+  } else if (!available) {
+    color = '#ef4444'; // red - unavailable
+    bgColor = '#fee2e2';
+  }
 
   return new DivIcon({
     className: 'ev-marker',
@@ -58,10 +69,197 @@ function MapCenterController({ center, stations }: { center: LatLngExpression; s
   return null;
 }
 
+// Station popup component
+interface StationPopupProps {
+  station: Station;
+  session?: ChargingSession;
+  onStartCharging?: (station: Station, connector: Connector) => void;
+  onStopCharging?: (stationId: string) => void;
+}
+
+const StationPopup: React.FC<StationPopupProps> = ({ station, session, onStartCharging, onStopCharging }) => {
+  const [selectedConnector, setSelectedConnector] = useState<Connector | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const availableConnectors = station.connectors?.filter(c => c.available) || [];
+  const isCharging = session?.status === 'charging';
+
+  const handleStartCharging = async () => {
+    if (!selectedConnector || !onStartCharging) return;
+    setLoading(true);
+    try {
+      onStartCharging(station, selectedConnector);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStopCharging = async () => {
+    if (!onStopCharging) return;
+    setLoading(true);
+    try {
+      onStopCharging(station.id);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ minWidth: '250px' }}>
+      <h3 style={{ margin: '0 0 8px 0', color: '#1f2937' }}>{station.name}</h3>
+      <p style={{ margin: '4px 0', fontSize: '13px', color: '#6b7280' }}>
+        {station.address || 'N/A'}{station.city ? `, ${station.city}` : ''}
+      </p>
+      {station.operatorName && (
+        <p style={{ margin: '4px 0', fontSize: '13px' }}>
+          <strong>Operator:</strong> {station.operatorName}
+        </p>
+      )}
+
+      {/* Charging Session Display */}
+      {isCharging && session && (
+        <div style={{
+          backgroundColor: '#fef3c7',
+          padding: '12px',
+          borderRadius: '8px',
+          margin: '12px 0',
+          border: '1px solid #f59e0b',
+        }}>
+          <div style={{ fontWeight: '600', color: '#b45309', marginBottom: '8px' }}>
+            Charging in Progress
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '13px' }}>
+            <div>
+              <span style={{ color: '#6b7280' }}>Energy:</span>
+              <div style={{ fontWeight: '600', color: '#1f2937' }}>{session.energyKwh.toFixed(2)} kWh</div>
+            </div>
+            <div>
+              <span style={{ color: '#6b7280' }}>Power:</span>
+              <div style={{ fontWeight: '600', color: '#1f2937' }}>{session.currentPowerKw.toFixed(1)} kW</div>
+            </div>
+            <div>
+              <span style={{ color: '#6b7280' }}>Duration:</span>
+              <div style={{ fontWeight: '600', color: '#1f2937' }}>{session.duration}</div>
+            </div>
+            <div>
+              <span style={{ color: '#6b7280' }}>Cost:</span>
+              <div style={{ fontWeight: '600', color: '#1f2937' }}>{session.cost} AMD</div>
+            </div>
+          </div>
+          <button
+            onClick={handleStopCharging}
+            disabled={loading}
+            style={{
+              width: '100%',
+              marginTop: '12px',
+              padding: '8px 16px',
+              backgroundColor: '#ef4444',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              fontWeight: '500',
+              opacity: loading ? 0.7 : 1,
+            }}
+          >
+            {loading ? 'Stopping...' : 'Stop Charging'}
+          </button>
+        </div>
+      )}
+
+      {/* Connector Selection - only show if not charging */}
+      {!isCharging && (
+        <>
+          {station.connectors && station.connectors.length > 0 && (
+            <div style={{ marginTop: '12px' }}>
+              <strong style={{ fontSize: '13px' }}>Connectors:</strong>
+              <div style={{ marginTop: '8px' }}>
+                {station.connectors.map((connector) => (
+                  <div
+                    key={connector.id}
+                    onClick={() => connector.available && setSelectedConnector(connector)}
+                    style={{
+                      padding: '8px 12px',
+                      margin: '4px 0',
+                      borderRadius: '6px',
+                      backgroundColor: selectedConnector?.id === connector.id ? '#dbeafe' : '#f3f4f6',
+                      border: selectedConnector?.id === connector.id ? '2px solid #3b82f6' : '1px solid #e5e7eb',
+                      cursor: connector.available ? 'pointer' : 'not-allowed',
+                      opacity: connector.available ? 1 : 0.5,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      fontSize: '13px',
+                    }}
+                  >
+                    <span>
+                      {connector.type}
+                      {connector.powerKW && ` - ${connector.powerKW} kW`}
+                    </span>
+                    <span style={{
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      fontSize: '11px',
+                      fontWeight: '500',
+                      backgroundColor: connector.available ? '#dcfce7' : '#fee2e2',
+                      color: connector.available ? '#166534' : '#dc2626',
+                    }}>
+                      {connector.available ? 'Available' : 'In Use'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Start Charging Button */}
+          {availableConnectors.length > 0 && onStartCharging && (
+            <button
+              onClick={handleStartCharging}
+              disabled={!selectedConnector || loading}
+              style={{
+                width: '100%',
+                marginTop: '12px',
+                padding: '10px 16px',
+                backgroundColor: selectedConnector ? '#22c55e' : '#9ca3af',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: selectedConnector && !loading ? 'pointer' : 'not-allowed',
+                fontWeight: '500',
+                opacity: loading ? 0.7 : 1,
+              }}
+            >
+              {loading ? 'Starting...' : selectedConnector ? 'Start Charging' : 'Select a Connector'}
+            </button>
+          )}
+
+          {availableConnectors.length === 0 && (
+            <div style={{
+              marginTop: '12px',
+              padding: '10px',
+              backgroundColor: '#fee2e2',
+              borderRadius: '6px',
+              textAlign: 'center',
+              color: '#dc2626',
+              fontSize: '13px',
+            }}>
+              No available connectors
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
 export const StationMap: React.FC<StationMapProps> = ({
   stations,
   center = [40.1872, 44.5152], // Yerevan, Armenia
   zoom = 12,
+  activeSessions = new Map(),
+  onStartCharging,
+  onStopCharging,
 }) => {
   return (
     <div style={{ height: '600px', width: '100%' }}>
@@ -76,53 +274,26 @@ export const StationMap: React.FC<StationMapProps> = ({
         />
         <MapCenterController center={center} stations={stations} />
         {stations.map((station) => {
-          // Check if any connector is available
+          const session = activeSessions.get(station.id);
+          const isCharging = session?.status === 'charging';
           const hasAvailable = station.connectors?.some(c => c.available) ?? true;
+
           return (
-          <Marker
-            key={station.id}
-            position={[station.latitude, station.longitude]}
-            icon={createEvIcon(hasAvailable)}
-          >
-            <Popup>
-              <div>
-                <h3 style={{ margin: '0 0 8px 0' }}>{station.name}</h3>
-                <p style={{ margin: '4px 0' }}>
-                  <strong>Address:</strong> {station.address || 'N/A'}
-                </p>
-                {station.city && (
-                  <p style={{ margin: '4px 0' }}>
-                    <strong>City:</strong> {station.city}
-                  </p>
-                )}
-                {station.operatorName && (
-                  <p style={{ margin: '4px 0' }}>
-                    <strong>Operator:</strong> {station.operatorName}
-                  </p>
-                )}
-                {station.distance !== undefined && station.distance !== null && (
-                  <p style={{ margin: '4px 0' }}>
-                    <strong>Distance:</strong> {station.distance.toFixed(2)} km
-                  </p>
-                )}
-                {station.connectors && station.connectors.length > 0 && (
-                  <div style={{ marginTop: '8px' }}>
-                    <strong>Connectors:</strong>
-                    <ul style={{ margin: '4px 0', paddingLeft: '20px' }}>
-                      {station.connectors.map((connector) => (
-                        <li key={connector.id}>
-                          {connector.type}
-                          {connector.powerKW && ` - ${connector.powerKW} kW`}
-                          {connector.status && ` (${connector.status})`}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </Popup>
-          </Marker>
-        );
+            <Marker
+              key={station.id}
+              position={[station.latitude, station.longitude]}
+              icon={createEvIcon(hasAvailable, isCharging)}
+            >
+              <Popup>
+                <StationPopup
+                  station={station}
+                  session={session}
+                  onStartCharging={onStartCharging}
+                  onStopCharging={onStopCharging}
+                />
+              </Popup>
+            </Marker>
+          );
         })}
       </MapContainer>
     </div>

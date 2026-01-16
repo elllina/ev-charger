@@ -35,6 +35,11 @@ export const api = {
   getActiveSessions: () => apiClient.get('/sessions/active'),
   getSessionHistory: () => apiClient.get('/sessions/history'),
 
+  // Demo sessions (from frontend charging)
+  getDemoSessions: () => apiClient.get('/demo/sessions'),
+  getDemoSessionStats: () => apiClient.get('/demo/sessions/stats'),
+  getActiveDemoSessions: () => apiClient.get('/demo/sessions/active'),
+
   // Stations (OCM)
   getNearbyStations: (lat: number, lng: number, radius: number = 50) =>
     apiClient.get('/ocm/nearby', { params: { lat, lng, radius } }),
@@ -56,32 +61,38 @@ export const api = {
   // Dashboard stats
   getDashboardStats: async () => {
     try {
-      const [chargePointsRes, healthRes] = await Promise.all([
+      const [chargePointsRes, healthRes, demoStatsRes] = await Promise.all([
         apiClient.get('/ocpp/chargepoints'),
         apiClient.get('/health'),
+        apiClient.get('/demo/sessions/stats').catch(() => ({ data: { stats: {} } })),
       ]);
 
       const chargePoints = chargePointsRes.data || [];
       const activeChargePoints = chargePoints.filter((cp: { status: string }) => cp.status === 'Available' || cp.status === 'Charging');
-      const chargingSessions = chargePoints.filter((cp: { status: string }) => cp.status === 'Charging');
+      const ocppChargingSessions = chargePoints.filter((cp: { status: string }) => cp.status === 'Charging');
+
+      // Include demo session stats
+      const demoStats = demoStatsRes.data?.stats || {};
 
       return {
-        totalStations: chargePoints.length,
+        totalStations: chargePoints.length + 8, // Include 8 sample stations
         activeStations: activeChargePoints.length,
-        activeSessions: chargingSessions.length,
-        totalRevenue: 125000, // Mock value in AMD
-        totalEnergy: 1250.5, // Mock value in kWh
+        activeSessions: ocppChargingSessions.length + (demoStats.activeSessions || 0),
+        totalRevenue: demoStats.totalRevenue || 0,
+        totalEnergy: demoStats.totalEnergy || 0,
         serverStatus: healthRes.data?.status === 'ok' ? 'Online' : 'Offline',
+        demoSessionsData: demoStats.activeSessionsData || [],
       };
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
       return {
-        totalStations: 0,
+        totalStations: 8,
         activeStations: 0,
         activeSessions: 0,
         totalRevenue: 0,
         totalEnergy: 0,
         serverStatus: 'Offline',
+        demoSessionsData: [],
       };
     }
   },

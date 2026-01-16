@@ -7,6 +7,7 @@ import walletRoutes from './walletRoutes';
 import favoriteRoutes from './favoriteRoutes';
 import ocmRoutes from './ocmRoutes';
 import ocppRoutes from './ocppRoutes';
+import demoSessionRoutes from './demoSessionRoutes';
 
 const router = Router();
 
@@ -19,6 +20,7 @@ router.use('/user/wallet', walletRoutes);
 router.use('/favorites', favoriteRoutes);
 router.use('/ocm', ocmRoutes); // Open Charge Map integration
 router.use('/ocpp', ocppRoutes); // OCPP protocol
+router.use('/demo/sessions', demoSessionRoutes); // Demo sessions for dashboard
 
 // Health check
 router.get('/health', (req, res) => {

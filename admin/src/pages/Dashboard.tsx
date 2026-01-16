@@ -3,6 +3,18 @@ import Header from '../components/Header';
 import StatsCard from '../components/StatsCard';
 import api from '../api/client';
 
+interface DemoSession {
+  id: string;
+  stationName: string;
+  connectorType: string;
+  powerKW: number;
+  energyKwh: number;
+  currentPowerKw: number;
+  duration: string;
+  cost: number;
+  status: string;
+}
+
 interface DashboardStats {
   totalStations: number;
   activeStations: number;
@@ -10,6 +22,7 @@ interface DashboardStats {
   totalRevenue: number;
   totalEnergy: number;
   serverStatus: string;
+  demoSessionsData?: DemoSession[];
 }
 
 interface ChargePoint {
@@ -28,6 +41,7 @@ const Dashboard: React.FC = () => {
     totalRevenue: 0,
     totalEnergy: 0,
     serverStatus: 'Loading...',
+    demoSessionsData: [],
   });
   const [chargePoints, setChargePoints] = useState<ChargePoint[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +63,7 @@ const Dashboard: React.FC = () => {
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 30000); // Refresh every 30 seconds
+    const interval = setInterval(fetchData, 5000); // Refresh every 5 seconds for live updates
     return () => clearInterval(interval);
   }, []);
 
@@ -69,6 +83,8 @@ const Dashboard: React.FC = () => {
     );
   }
 
+  const activeSessions = stats.demoSessionsData?.filter(s => s.status === 'charging') || [];
+
   return (
     <div style={styles.container}>
       <Header title="Dashboard" />
@@ -79,7 +95,6 @@ const Dashboard: React.FC = () => {
           value={stats.totalStations}
           icon="⚡"
           color="#3b82f6"
-          trend={{ value: 12, isPositive: true }}
         />
         <StatsCard
           title="Active Stations"
@@ -98,11 +113,10 @@ const Dashboard: React.FC = () => {
           value={formatCurrency(stats.totalRevenue)}
           icon="💰"
           color="#8b5cf6"
-          trend={{ value: 8, isPositive: true }}
         />
         <StatsCard
           title="Energy Delivered"
-          value={`${stats.totalEnergy.toFixed(1)} kWh`}
+          value={`${stats.totalEnergy.toFixed(2)} kWh`}
           icon="⚡"
           color="#06b6d4"
         />
@@ -114,8 +128,53 @@ const Dashboard: React.FC = () => {
         />
       </div>
 
+      {/* Live Charging Sessions */}
+      {activeSessions.length > 0 && (
+        <div style={{ ...styles.section, marginBottom: '20px', backgroundColor: '#fffbeb', border: '1px solid #f59e0b' }}>
+          <h2 style={{ ...styles.sectionTitle, color: '#b45309', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{
+              width: '12px',
+              height: '12px',
+              backgroundColor: '#f59e0b',
+              borderRadius: '50%',
+              display: 'inline-block',
+              animation: 'pulse 2s infinite',
+            }} />
+            Live Charging Sessions ({activeSessions.length})
+          </h2>
+          <div style={styles.sessionsGrid}>
+            {activeSessions.map((session) => (
+              <div key={session.id} style={styles.sessionCard}>
+                <div style={styles.sessionHeader}>
+                  <span style={styles.sessionName}>{session.stationName}</span>
+                  <span style={styles.sessionConnector}>{session.connectorType}</span>
+                </div>
+                <div style={styles.sessionStats}>
+                  <div style={styles.sessionStat}>
+                    <span style={styles.statLabel}>Energy</span>
+                    <span style={styles.statValue}>{session.energyKwh.toFixed(2)} kWh</span>
+                  </div>
+                  <div style={styles.sessionStat}>
+                    <span style={styles.statLabel}>Power</span>
+                    <span style={styles.statValue}>{session.currentPowerKw.toFixed(1)} kW</span>
+                  </div>
+                  <div style={styles.sessionStat}>
+                    <span style={styles.statLabel}>Duration</span>
+                    <span style={styles.statValue}>{session.duration}</span>
+                  </div>
+                  <div style={styles.sessionStat}>
+                    <span style={styles.statLabel}>Cost</span>
+                    <span style={styles.statValue}>{session.cost} AMD</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Charge Points Status</h2>
+        <h2 style={styles.sectionTitle}>OCPP Charge Points Status</h2>
         <div style={styles.tableContainer}>
           <table style={styles.table}>
             <thead>
@@ -131,7 +190,7 @@ const Dashboard: React.FC = () => {
               {chargePoints.length === 0 ? (
                 <tr>
                   <td colSpan={5} style={styles.emptyRow}>
-                    No charge points connected
+                    No OCPP charge points connected
                   </td>
                 </tr>
               ) : (
@@ -158,6 +217,13 @@ const Dashboard: React.FC = () => {
           </table>
         </div>
       </div>
+
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+      `}</style>
     </div>
   );
 };
@@ -206,6 +272,54 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: '600',
     color: '#111827',
     margin: '0 0 20px 0',
+  },
+  sessionsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    gap: '16px',
+  },
+  sessionCard: {
+    backgroundColor: 'white',
+    borderRadius: '8px',
+    padding: '16px',
+    border: '1px solid #e5e7eb',
+  },
+  sessionHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '12px',
+  },
+  sessionName: {
+    fontWeight: '600',
+    color: '#1f2937',
+    fontSize: '15px',
+  },
+  sessionConnector: {
+    fontSize: '12px',
+    color: '#6b7280',
+    backgroundColor: '#f3f4f6',
+    padding: '4px 8px',
+    borderRadius: '4px',
+  },
+  sessionStats: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '12px',
+  },
+  sessionStat: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  statLabel: {
+    fontSize: '12px',
+    color: '#6b7280',
+    marginBottom: '2px',
+  },
+  statValue: {
+    fontSize: '16px',
+    fontWeight: '600',
+    color: '#1f2937',
   },
   tableContainer: {
     overflowX: 'auto',

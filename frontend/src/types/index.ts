@@ -20,6 +20,22 @@ export interface Connector {
   status?: string;
 }
 
+// Active charging session
+export interface ChargingSession {
+  id: string;
+  stationId: string;
+  stationName: string;
+  connectorId: string;
+  connectorType: string;
+  powerKW: number;
+  startTime: Date;
+  energyKwh: number;
+  currentPowerKw: number;
+  duration: string;
+  cost: number;
+  status: 'charging' | 'completed' | 'stopped';
+}
+
 // OCPP Charge Point types
 export interface ChargePoint {
   chargePointId: string;
