@@ -8,6 +8,7 @@ import favoriteRoutes from './favoriteRoutes';
 import ocmRoutes from './ocmRoutes';
 import ocppRoutes from './ocppRoutes';
 import demoSessionRoutes from './demoSessionRoutes';
+import adminStationRoutes from './adminStationRoutes';
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.use('/favorites', favoriteRoutes);
 router.use('/ocm', ocmRoutes); // Open Charge Map integration
 router.use('/ocpp', ocppRoutes); // OCPP protocol
 router.use('/demo/sessions', demoSessionRoutes); // Demo sessions for dashboard
+router.use('/admin/stations', adminStationRoutes); // Admin station management
 
 // Health check
 router.get('/health', (req, res) => {
