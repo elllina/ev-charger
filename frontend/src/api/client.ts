@@ -55,3 +55,47 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Demo sessions API for dashboard integration
+export const demoSessionsApi = {
+  // Post a session update to the backend
+  postSession: async (session: {
+    id: string;
+    stationId: string;
+    stationName: string;
+    connectorId: string;
+    connectorType: string;
+    powerKW: number;
+    startTime: string;
+    energyKwh: number;
+    currentPowerKw: number;
+    duration: string;
+    cost: number;
+    status: 'charging' | 'completed' | 'stopped';
+  }) => {
+    try {
+      await apiClient.post('/demo/sessions', session);
+    } catch (error) {
+      // Silently fail - demo feature
+      console.error('Failed to sync session to backend:', error);
+    }
+  },
+
+  // Update a session
+  updateSession: async (id: string, updates: Record<string, unknown>) => {
+    try {
+      await apiClient.put(`/demo/sessions/${id}`, updates);
+    } catch (error) {
+      console.error('Failed to update session:', error);
+    }
+  },
+
+  // Delete a session
+  deleteSession: async (id: string) => {
+    try {
+      await apiClient.delete(`/demo/sessions/${id}`);
+    } catch (error) {
+      console.error('Failed to delete session:', error);
+    }
+  },
+};
