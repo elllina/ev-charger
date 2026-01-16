@@ -54,7 +54,11 @@ const Dashboard: React.FC = () => {
           api.getChargePoints(),
         ]);
         setStats(statsData);
-        setChargePoints(cpResponse.data || []);
+        // Handle response: { success, chargePoints: [...] }
+        const cpData = Array.isArray(cpResponse.data)
+          ? cpResponse.data
+          : (cpResponse.data?.chargePoints || []);
+        setChargePoints(cpData);
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {

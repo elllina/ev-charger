@@ -67,8 +67,14 @@ export const api = {
         apiClient.get('/demo/sessions/stats').catch(() => ({ data: { stats: {} } })),
       ]);
 
-      const chargePoints = chargePointsRes.data || [];
-      const activeChargePoints = chargePoints.filter((cp: { status: string }) => cp.status === 'Available' || cp.status === 'Charging');
+      // Handle response structure: { success, chargePoints: [...] }
+      const chargePoints = Array.isArray(chargePointsRes.data)
+        ? chargePointsRes.data
+        : (chargePointsRes.data?.chargePoints || []);
+
+      const activeChargePoints = chargePoints.filter((cp: { status: string; connected?: boolean }) =>
+        cp.status === 'Available' || cp.status === 'Charging' || cp.connected
+      );
       const ocppChargingSessions = chargePoints.filter((cp: { status: string }) => cp.status === 'Charging');
 
       // Include demo session stats
