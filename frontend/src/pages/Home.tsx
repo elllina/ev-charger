@@ -123,14 +123,19 @@ export const Home: React.FC = () => {
       return newMap;
     });
 
-    // Sync session to backend for dashboard access
+    // Sync session to backend for dashboard access (initial)
     demoSessionsApi.postSession({
       ...newSession,
       startTime: startTime.toISOString(),
     });
 
-    // Start real-time updates
+    // Counter for backend sync (every 5 seconds instead of every second)
+    let syncCounter = 0;
+
+    // Start real-time updates (UI updates every second, backend sync every 5 seconds)
     const interval = setInterval(() => {
+      syncCounter++;
+
       setActiveSessions(prev => {
         const session = prev.get(station.id);
         if (!session || session.status !== 'charging') {
@@ -165,11 +170,13 @@ export const Home: React.FC = () => {
           cost,
         };
 
-        // Sync to backend for dashboard
-        demoSessionsApi.postSession({
-          ...updatedSession,
-          startTime: new Date(session.startTime).toISOString(),
-        });
+        // Sync to backend every 5 seconds (not every second)
+        if (syncCounter % 5 === 0) {
+          demoSessionsApi.postSession({
+            ...updatedSession,
+            startTime: new Date(session.startTime).toISOString(),
+          });
+        }
 
         const newMap = new Map(prev);
         newMap.set(station.id, updatedSession);
