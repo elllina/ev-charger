@@ -76,10 +76,10 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('combined', { stream: morganStream }));
 }
 
-// Rate limiting
+// Rate limiting - more generous limits for demo/development
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 200, // Limit each IP to 200 requests per minute
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
