@@ -90,6 +90,30 @@ export class ChargingStation extends Model {
   @Column(DataType.ENUM('active', 'inactive', 'maintenance'))
   status!: 'active' | 'inactive' | 'maintenance';
 
+  // OCPP charge point ID - links this station to an OCPP charger
+  @Index
+  @Column(DataType.STRING)
+  ocppChargePointId?: string;
+
+  // Last time the OCPP charge point connected
+  @Column(DataType.DATE)
+  ocppLastSeen?: Date;
+
+  // OCPP connection status
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  ocppConnected!: boolean;
+
+  // OCPP charge point vendor info
+  @Column(DataType.STRING)
+  ocppVendor?: string;
+
+  @Column(DataType.STRING)
+  ocppModel?: string;
+
+  @Column(DataType.STRING)
+  ocppFirmwareVersion?: string;
+
   @CreatedAt
   createdAt!: Date;
 

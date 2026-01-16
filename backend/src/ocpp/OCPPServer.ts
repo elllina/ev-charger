@@ -2,6 +2,8 @@ import { Server as WebSocketServer, WebSocket } from 'ws';
 import { Server as HTTPServer } from 'http';
 import { v4 as uuidv4 } from 'uuid';
 import { logger } from '../config/logger';
+import { ChargingStation } from '../models/ChargingStation';
+import { Connector } from '../models/Connector';
 import {
   OCPPMessage,
   OCPPMessageType,
@@ -32,9 +34,19 @@ import {
  * OCPP Central System (Server)
  * Handles WebSocket connections from charge points
  */
+interface ChargePointInfo {
+  vendor?: string;
+  model?: string;
+  firmwareVersion?: string;
+  serialNumber?: string;
+  lastSeen: Date;
+  connectorStatus?: Map<number, string>;
+}
+
 export class OCPPServer {
   private wss: WebSocketServer;
   private chargePoints: Map<string, WebSocket> = new Map();
+  private chargePointInfo: Map<string, ChargePointInfo> = new Map();
   private pendingRequests: Map<string, (result: any) => void> = new Map();
 
   constructor(server: HTTPServer) {
@@ -71,6 +83,9 @@ export class OCPPServer {
     // Store charge point connection
     this.chargePoints.set(chargePointId, ws);
 
+    // Update station's OCPP connection status
+    this.updateStationConnectionStatus(chargePointId, true);
+
     ws.on('message', (data: Buffer) => {
       this.handleMessage(chargePointId, data.toString());
     });
@@ -78,11 +93,34 @@ export class OCPPServer {
     ws.on('close', () => {
       logger.info(`📴 Charge point disconnected: ${chargePointId}`);
       this.chargePoints.delete(chargePointId);
+      // Update station's OCPP connection status
+      this.updateStationConnectionStatus(chargePointId, false);
     });
 
     ws.on('error', (error: Error) => {
       logger.error(`❌ WebSocket error for ${chargePointId}:`, error);
     });
+  }
+
+  /**
+   * Update station's OCPP connection status in database
+   */
+  private async updateStationConnectionStatus(chargePointId: string, connected: boolean): Promise<void> {
+    try {
+      const station = await ChargingStation.findOne({
+        where: { ocppChargePointId: chargePointId }
+      });
+
+      if (station) {
+        await station.update({
+          ocppConnected: connected,
+          ocppLastSeen: new Date()
+        });
+        logger.info(`📊 Updated station ${station.name} OCPP status: ${connected ? 'connected' : 'disconnected'}`);
+      }
+    } catch (error) {
+      logger.error(`Failed to update station connection status for ${chargePointId}:`, error);
+    }
   }
 
   /**
@@ -199,8 +237,35 @@ export class OCPPServer {
   ): Promise<BootNotificationResponse> {
     logger.info(`🔌 Boot notification from ${chargePointId}:`, request);
 
-    // TODO: Store charge point info in database
-    // TODO: Validate charge point credentials
+    // Update station with charge point info
+    try {
+      const station = await ChargingStation.findOne({
+        where: { ocppChargePointId: chargePointId }
+      });
+
+      if (station) {
+        await station.update({
+          ocppVendor: request.chargePointVendor,
+          ocppModel: request.chargePointModel,
+          ocppFirmwareVersion: request.firmwareVersion,
+          ocppConnected: true,
+          ocppLastSeen: new Date()
+        });
+        logger.info(`📊 Updated station ${station.name} with OCPP info: ${request.chargePointVendor} ${request.chargePointModel}`);
+      } else {
+        // Store in charge point info map for unlinked charge points
+        this.chargePointInfo.set(chargePointId, {
+          vendor: request.chargePointVendor,
+          model: request.chargePointModel,
+          firmwareVersion: request.firmwareVersion,
+          serialNumber: request.chargePointSerialNumber,
+          lastSeen: new Date()
+        });
+        logger.info(`📦 Stored info for unlinked charge point ${chargePointId}`);
+      }
+    } catch (error) {
+      logger.error(`Failed to update station with boot info:`, error);
+    }
 
     return {
       status: RegistrationStatus.Accepted,
@@ -288,8 +353,54 @@ export class OCPPServer {
   ): Promise<{}> {
     logger.info(`📊 Status notification from ${chargePointId}:`, request);
 
-    // TODO: Update connector status in database
-    // TODO: Broadcast status change via Socket.io to connected clients
+    // Update connector status in database
+    try {
+      const station = await ChargingStation.findOne({
+        where: { ocppChargePointId: chargePointId },
+        include: [{ model: Connector }]
+      });
+
+      if (station && station.connectors) {
+        // Find connector by number
+        const connector = station.connectors.find(
+          c => c.connectorNumber === request.connectorId
+        );
+
+        if (connector) {
+          // Map OCPP status to our connector status
+          const statusMap: Record<string, string> = {
+            'Available': 'available',
+            'Preparing': 'available',
+            'Charging': 'occupied',
+            'SuspendedEV': 'occupied',
+            'SuspendedEVSE': 'occupied',
+            'Finishing': 'occupied',
+            'Reserved': 'reserved',
+            'Unavailable': 'offline',
+            'Faulted': 'faulted'
+          };
+
+          const newStatus = statusMap[request.status] || 'offline';
+          await connector.update({
+            status: newStatus,
+            lastStatusUpdate: new Date()
+          });
+
+          logger.info(`📊 Updated connector ${connector.id} status to ${newStatus}`);
+        }
+      }
+
+      // Also store in memory for unlinked charge points
+      const info = this.chargePointInfo.get(chargePointId) || { lastSeen: new Date() };
+      if (!info.connectorStatus) {
+        info.connectorStatus = new Map();
+      }
+      info.connectorStatus.set(request.connectorId, request.status);
+      info.lastSeen = new Date();
+      this.chargePointInfo.set(chargePointId, info);
+    } catch (error) {
+      logger.error(`Failed to update connector status:`, error);
+    }
 
     return {};
   }
@@ -445,6 +556,47 @@ export class OCPPServer {
    */
   public getConnectedChargePoints(): string[] {
     return Array.from(this.chargePoints.keys());
+  }
+
+  /**
+   * Get detailed info for all connected charge points
+   */
+  public getConnectedChargePointsWithInfo(): Array<{
+    chargePointId: string;
+    connected: boolean;
+    vendor?: string;
+    model?: string;
+    firmwareVersion?: string;
+    lastSeen?: Date;
+    connectorStatus?: Record<number, string>;
+  }> {
+    const result = [];
+    for (const [chargePointId, ws] of this.chargePoints) {
+      const info = this.chargePointInfo.get(chargePointId);
+      const connectorStatusObj: Record<number, string> = {};
+      if (info?.connectorStatus) {
+        for (const [k, v] of info.connectorStatus) {
+          connectorStatusObj[k] = v;
+        }
+      }
+      result.push({
+        chargePointId,
+        connected: ws.readyState === WebSocket.OPEN,
+        vendor: info?.vendor,
+        model: info?.model,
+        firmwareVersion: info?.firmwareVersion,
+        lastSeen: info?.lastSeen,
+        connectorStatus: connectorStatusObj
+      });
+    }
+    return result;
+  }
+
+  /**
+   * Get info for a specific charge point
+   */
+  public getChargePointInfo(chargePointId: string): ChargePointInfo | undefined {
+    return this.chargePointInfo.get(chargePointId);
   }
 
   /**

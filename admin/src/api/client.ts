@@ -47,6 +47,20 @@ export const api = {
   // Networks
   getNetworks: () => apiClient.get('/networks'),
 
+  // Admin Station Management
+  getAllStations: () => apiClient.get('/admin/stations'),
+  getUnlinkedChargePoints: () => apiClient.get('/admin/stations/unlinked-chargepoints'),
+  createStation: (data: any) => apiClient.post('/admin/stations', data),
+  updateStation: (id: string, data: any) => apiClient.put(`/admin/stations/${id}`, data),
+  deleteStation: (id: string) => apiClient.delete(`/admin/stations/${id}`),
+  linkChargePoint: (stationId: string, chargePointId: string) =>
+    apiClient.post(`/admin/stations/${stationId}/link-chargepoint`, { chargePointId }),
+  unlinkChargePoint: (stationId: string) =>
+    apiClient.post(`/admin/stations/${stationId}/unlink-chargepoint`),
+  addConnector: (stationId: string, data: any) =>
+    apiClient.post(`/admin/stations/${stationId}/connectors`, data),
+  getAdminNetworks: () => apiClient.get('/admin/stations/networks'),
+
   // Users (placeholder - would need backend endpoint)
   getUsers: async () => {
     // Mock data for now
