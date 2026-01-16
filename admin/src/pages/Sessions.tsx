@@ -4,14 +4,17 @@ import api from '../api/client';
 
 interface Session {
   id: string;
-  chargePointId: string;
-  connectorId: number;
+  stationId: string;
+  stationName: string;
+  connectorId: string;
+  connectorType: string;
+  powerKW: number;
   startTime: string;
-  endTime?: string;
   energyKwh: number;
+  currentPowerKw: number;
+  duration: string;
   cost: number;
-  status: 'active' | 'completed' | 'failed';
-  userId?: string;
+  status: 'charging' | 'completed' | 'stopped';
 }
 
 const Sessions: React.FC = () => {
@@ -22,88 +25,45 @@ const Sessions: React.FC = () => {
   useEffect(() => {
     const fetchSessions = async () => {
       try {
-        // Get charge points to derive active sessions
-        const cpResponse = await api.getChargePoints();
-        const chargePoints = cpResponse.data || [];
-
-        // Create mock sessions based on charge point status
-        const mockSessions: Session[] = chargePoints
-          .filter((cp: { status: string }) => cp.status === 'Charging')
-          .map((cp: { chargePointId: string }, index: number) => ({
-            id: `session-${index + 1}`,
-            chargePointId: cp.chargePointId,
-            connectorId: 1,
-            startTime: new Date(Date.now() - Math.random() * 3600000).toISOString(),
-            energyKwh: Math.round(Math.random() * 30 * 100) / 100,
-            cost: Math.round(Math.random() * 5000),
-            status: 'active' as const,
-          }));
-
-        // Add some historical sessions
-        const historicalSessions: Session[] = [
-          {
-            id: 'hist-1',
-            chargePointId: 'CP-001',
-            connectorId: 1,
-            startTime: new Date(Date.now() - 86400000).toISOString(),
-            endTime: new Date(Date.now() - 82800000).toISOString(),
-            energyKwh: 45.2,
-            cost: 4520,
-            status: 'completed',
-          },
-          {
-            id: 'hist-2',
-            chargePointId: 'CP-002',
-            connectorId: 1,
-            startTime: new Date(Date.now() - 172800000).toISOString(),
-            endTime: new Date(Date.now() - 169200000).toISOString(),
-            energyKwh: 32.8,
-            cost: 3280,
-            status: 'completed',
-          },
-        ];
-
-        setSessions([...mockSessions, ...historicalSessions]);
+        // Fetch demo sessions from backend
+        const response = await api.getDemoSessions();
+        const demoSessions = response.data?.sessions || [];
+        setSessions(demoSessions);
       } catch (error) {
         console.error('Error fetching sessions:', error);
+        setSessions([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchSessions();
-    const interval = setInterval(fetchSessions, 30000);
+    // Refresh every 3 seconds for live updates
+    const interval = setInterval(fetchSessions, 3000);
     return () => clearInterval(interval);
   }, []);
 
   const filteredSessions = sessions.filter((session) => {
     if (filter === 'all') return true;
-    if (filter === 'active') return session.status === 'active';
-    if (filter === 'completed') return session.status === 'completed';
+    if (filter === 'active') return session.status === 'charging';
+    if (filter === 'completed') return session.status === 'completed' || session.status === 'stopped';
     return true;
   });
 
-  const formatDuration = (start: string, end?: string) => {
-    const startDate = new Date(start);
-    const endDate = end ? new Date(end) : new Date();
-    const diffMs = endDate.getTime() - startDate.getTime();
-    const hours = Math.floor(diffMs / 3600000);
-    const minutes = Math.floor((diffMs % 3600000) / 60000);
-    return `${hours}h ${minutes}m`;
-  };
-
   const getStatusColor = (status: string): string => {
     switch (status) {
-      case 'active':
-        return '#3b82f6';
+      case 'charging':
+        return '#f59e0b';
       case 'completed':
         return '#10b981';
-      case 'failed':
-        return '#ef4444';
+      case 'stopped':
+        return '#6b7280';
       default:
         return '#6b7280';
     }
   };
+
+  const activeCount = sessions.filter(s => s.status === 'charging').length;
 
   if (loading) {
     return (
@@ -131,22 +91,33 @@ const Sessions: React.FC = () => {
             {f.charAt(0).toUpperCase() + f.slice(1)}
             {f === 'active' && (
               <span style={styles.badge}>
-                {sessions.filter((s) => s.status === 'active').length}
+                {activeCount}
               </span>
             )}
           </button>
         ))}
       </div>
 
+      {/* Live Sessions Banner */}
+      {activeCount > 0 && (
+        <div style={styles.liveBanner}>
+          <div style={styles.liveDot} />
+          <span style={styles.liveText}>
+            {activeCount} Active Session{activeCount > 1 ? 's' : ''} - Live Data
+          </span>
+        </div>
+      )}
+
       <div style={styles.tableContainer}>
         <table style={styles.table}>
           <thead>
             <tr style={styles.tableHeader}>
-              <th style={styles.th}>Session ID</th>
-              <th style={styles.th}>Charge Point</th>
+              <th style={styles.th}>Station</th>
+              <th style={styles.th}>Connector</th>
               <th style={styles.th}>Start Time</th>
               <th style={styles.th}>Duration</th>
               <th style={styles.th}>Energy (kWh)</th>
+              <th style={styles.th}>Power (kW)</th>
               <th style={styles.th}>Cost (AMD)</th>
               <th style={styles.th}>Status</th>
             </tr>
@@ -154,29 +125,55 @@ const Sessions: React.FC = () => {
           <tbody>
             {filteredSessions.length === 0 ? (
               <tr>
-                <td colSpan={7} style={styles.emptyRow}>
-                  No sessions found
+                <td colSpan={8} style={styles.emptyRow}>
+                  {filter === 'active'
+                    ? 'No active sessions. Start charging from the frontend map.'
+                    : 'No sessions found'}
                 </td>
               </tr>
             ) : (
               filteredSessions.map((session) => (
-                <tr key={session.id} style={styles.tableRow}>
-                  <td style={styles.td}>{session.id}</td>
-                  <td style={styles.td}>{session.chargePointId}</td>
+                <tr key={session.id} style={{
+                  ...styles.tableRow,
+                  backgroundColor: session.status === 'charging' ? '#fffbeb' : 'white',
+                }}>
+                  <td style={styles.td}>
+                    <div style={styles.stationName}>{session.stationName}</div>
+                  </td>
+                  <td style={styles.td}>
+                    <span style={styles.connectorBadge}>{session.connectorType}</span>
+                  </td>
                   <td style={styles.td}>
                     {new Date(session.startTime).toLocaleString()}
                   </td>
                   <td style={styles.td}>
-                    {formatDuration(session.startTime, session.endTime)}
+                    <span style={session.status === 'charging' ? styles.liveDuration : {}}>
+                      {session.duration}
+                    </span>
                   </td>
-                  <td style={styles.td}>{session.energyKwh.toFixed(2)}</td>
-                  <td style={styles.td}>{session.cost.toLocaleString()}</td>
+                  <td style={styles.td}>
+                    <span style={session.status === 'charging' ? styles.liveValue : {}}>
+                      {session.energyKwh.toFixed(2)}
+                    </span>
+                  </td>
+                  <td style={styles.td}>
+                    {session.status === 'charging' ? (
+                      <span style={styles.liveValue}>{session.currentPowerKw.toFixed(1)}</span>
+                    ) : (
+                      '-'
+                    )}
+                  </td>
+                  <td style={styles.td}>
+                    <span style={session.status === 'charging' ? styles.liveValue : {}}>
+                      {session.cost.toLocaleString()}
+                    </span>
+                  </td>
                   <td style={styles.td}>
                     <span style={{
                       ...styles.statusBadge,
                       backgroundColor: getStatusColor(session.status),
                     }}>
-                      {session.status}
+                      {session.status === 'charging' ? 'Charging' : session.status}
                     </span>
                   </td>
                 </tr>
@@ -200,6 +197,13 @@ const Sessions: React.FC = () => {
           </span>
         </div>
       </div>
+
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+      `}</style>
     </div>
   );
 };
@@ -244,6 +248,28 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '10px',
     fontSize: '12px',
   },
+  liveBanner: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '12px 16px',
+    backgroundColor: '#fef3c7',
+    border: '1px solid #f59e0b',
+    borderRadius: '8px',
+    marginBottom: '20px',
+  },
+  liveDot: {
+    width: '10px',
+    height: '10px',
+    backgroundColor: '#f59e0b',
+    borderRadius: '50%',
+    animation: 'pulse 2s infinite',
+  },
+  liveText: {
+    color: '#b45309',
+    fontWeight: '600',
+    fontSize: '14px',
+  },
   tableContainer: {
     backgroundColor: 'white',
     borderRadius: '12px',
@@ -269,11 +295,31 @@ const styles: Record<string, React.CSSProperties> = {
   },
   tableRow: {
     borderBottom: '1px solid #e5e7eb',
+    transition: 'background-color 0.2s',
   },
   td: {
     padding: '14px 16px',
     fontSize: '14px',
     color: '#374151',
+  },
+  stationName: {
+    fontWeight: '500',
+    color: '#1f2937',
+  },
+  connectorBadge: {
+    backgroundColor: '#e5e7eb',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    fontSize: '12px',
+    fontWeight: '500',
+  },
+  liveDuration: {
+    fontWeight: '600',
+    color: '#b45309',
+  },
+  liveValue: {
+    fontWeight: '600',
+    color: '#1f2937',
   },
   emptyRow: {
     padding: '40px 16px',
