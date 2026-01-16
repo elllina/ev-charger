@@ -23,7 +23,11 @@ const Stations: React.FC = () => {
   const fetchChargePoints = async () => {
     try {
       const response = await api.getChargePoints();
-      setChargePoints(response.data || []);
+      // Handle response: { success, chargePoints: [...] } or direct array
+      const data = Array.isArray(response.data)
+        ? response.data
+        : (response.data?.chargePoints || []);
+      setChargePoints(data);
     } catch (error) {
       console.error('Error fetching charge points:', error);
     } finally {
