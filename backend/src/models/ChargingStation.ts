@@ -11,7 +11,6 @@ import {
   HasMany,
   CreatedAt,
   UpdatedAt,
-  Index,
 } from 'sequelize-typescript';
 import { ChargingNetwork } from './ChargingNetwork';
 import { Connector } from './Connector';
@@ -91,7 +90,6 @@ export class ChargingStation extends Model {
   status!: 'active' | 'inactive' | 'maintenance';
 
   // OCPP charge point ID - links this station to an OCPP charger
-  @Index
   @Column(DataType.STRING)
   ocppChargePointId?: string;
 
