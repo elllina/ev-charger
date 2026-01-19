@@ -19,7 +19,7 @@ We propose to build a comprehensive EV charging station aggregator platform for 
 |-----------|-------------|
 | **React Native Mobile App** | iOS & Android native apps with maps, charging sessions, wallet |
 | **React Web Application** | Progressive Web App for browser access |
-| **Admin Dashboard** | Complete management interface for operators |
+| **Admin Dashboard** | Using existing static framework (no custom design needed) |
 | **Backend API** | ✅ Already 95% complete - production-ready |
 | **Partner Integrations** | Real API connections with charging networks |
 | **Payment Integration** | iDram, Telcell, and card processing |
@@ -34,7 +34,7 @@ We propose to build a comprehensive EV charging station aggregator platform for 
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  PHASE 1: UI/UX Design                    │████████│     4 weeks           │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  PHASE 2: React Native Mobile App         │████████████████│  6-7 weeks    │
+│  PHASE 2: React Native Mobile + Web App   │████████████████│  6-7 weeks    │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  PHASE 3: Partner Integrations            │████████████│    4-5 weeks      │
 ├─────────────────────────────────────────────────────────────────────────────┤
@@ -50,7 +50,7 @@ Note: Phases 2 and 3 can run in parallel, reducing total time.
 
 ### PHASE 1: UI/UX Design (4 weeks)
 
-**Objective**: Create modern, intuitive interface designs for all platforms
+**Objective**: Create modern, intuitive interface designs for Mobile App + Web Application
 
 #### Week 1-2: Research & Wireframing
 - [ ] Competitive analysis (ChargePoint, Electromaps, PlugShare)
@@ -69,14 +69,14 @@ Note: Phases 2 and 3 can run in parallel, reducing total time.
 
 **Deliverables**:
 - Complete UI kit in Figma
-- 25+ screen designs (mobile + web)
+- 30+ screen designs (mobile app + web responsive)
 - Interactive prototype
 - Design system documentation
 - Asset export specifications
 
 **Screens to Design**:
 ```
-Mobile App:
+Mobile App (20+ screens):
 ├── Onboarding (3 slides)
 ├── Authentication
 │   ├── Login
@@ -105,16 +105,28 @@ Mobile App:
     ├── Language
     ├── Notifications
     └── Support
+
+Web Application (10+ screens):
+├── Landing Page
+├── Map View (full-screen)
+├── Station Details Modal
+├── Login / Register
+├── User Dashboard
+├── Wallet & Transactions
+├── Session History
+└── Profile Settings
 ```
 
 ---
 
-### PHASE 2: React Native Mobile App (6-7 weeks)
+### PHASE 2: React Native Mobile + Web App (6-7 weeks)
 
-**Objective**: Build native iOS and Android apps with clean architecture
+**Objective**: Build native iOS/Android apps and responsive web application with clean architecture
 
 #### Week 1-2: Project Setup & Core Infrastructure
 - [ ] React Native project initialization (Expo or bare workflow)
+- [ ] Web app setup (React + Vite)
+- [ ] Shared component library
 - [ ] Navigation setup (React Navigation 6)
 - [ ] State management (Zustand/Redux Toolkit)
 - [ ] API client with TypeScript
@@ -122,7 +134,7 @@ Mobile App:
 - [ ] Secure token storage
 
 #### Week 3-4: Map & Station Features
-- [ ] Interactive map (react-native-maps)
+- [ ] Interactive map (react-native-maps / Leaflet for web)
 - [ ] Geolocation services
 - [ ] Station markers with clustering
 - [ ] Station list view
@@ -143,6 +155,7 @@ Mobile App:
 #### Week 7: Polish & Platform-specific
 - [ ] iOS specific optimizations
 - [ ] Android specific optimizations
+- [ ] Web responsive design
 - [ ] Animations & transitions
 - [ ] Offline mode handling
 - [ ] Error states & loading states
@@ -151,18 +164,25 @@ Mobile App:
 
 **Tech Stack**:
 ```
-Framework:     React Native 0.73+ / Expo SDK 50+
-Language:      TypeScript 5.x
-Navigation:    React Navigation 6
-State:         Zustand 4.x
-Maps:          react-native-maps (Google Maps)
-WebSocket:     Socket.io-client
-HTTP Client:   Axios + React Query
-Storage:       react-native-mmkv
-Auth:          react-native-keychain
-Push:          Firebase Cloud Messaging
-Animations:    Reanimated 3
-UI Library:    React Native Paper / NativeWind
+Mobile:
+  Framework:     React Native 0.73+ / Expo SDK 50+
+  Language:      TypeScript 5.x
+  Navigation:    React Navigation 6
+  State:         Zustand 4.x
+  Maps:          react-native-maps (Google Maps)
+  WebSocket:     Socket.io-client
+  HTTP Client:   Axios + React Query
+  Storage:       react-native-mmkv
+  Auth:          react-native-keychain
+  Push:          Firebase Cloud Messaging
+  Animations:    Reanimated 3
+  UI Library:    React Native Paper / NativeWind
+
+Web:
+  Framework:     React 18 + Vite
+  Styling:       TailwindCSS
+  Maps:          Leaflet / Google Maps
+  State:         Zustand (shared with mobile)
 ```
 
 **Architecture**:
@@ -242,54 +262,86 @@ src/
 #### Week 3: Production Launch
 - [ ] App Store submission
 - [ ] Google Play submission
+- [ ] Web app deployment
 - [ ] Production deployment
 - [ ] Monitoring setup (Sentry, analytics)
 - [ ] Launch support
 
 ---
 
-## Team Requirements
+## Team Structure
 
-### Recommended Team Composition
+### Core Team (3 People)
 
-| Role | Count | Responsibility |
-|------|-------|----------------|
-| **UI/UX Designer** | 1 | Full-time during Phase 1, part-time after |
-| **React Native Developer (Senior)** | 1 | Mobile app development lead |
-| **React Native Developer (Mid)** | 1 | Mobile app development |
-| **Backend Developer** | 1 | API completion, partner integrations |
-| **QA Engineer** | 1 | Testing, quality assurance |
-| **Project Manager** | 1 | Coordination, client communication |
-
-**Total Team**: 6 people (can be optimized to 4-5 with senior roles)
+| Role | Responsibility | Allocation |
+|------|----------------|------------|
+| **UI/UX Designer** | Mobile + Web design, design system, prototypes | Full-time Phase 1, part-time support Phase 2-4 |
+| **Full-Stack Developer** | React Native, React Web, backend integrations, payments | Full-time Phase 2-4 |
+| **QA Engineer + Project Manager** | Testing, quality assurance, client communication, coordination | Part-time Phase 1-2, full-time Phase 3-4 |
 
 ---
 
-## Budget Estimation
+## Budget Estimation (Armenian Market Rates)
+
+### Monthly Salary Rates (AMD/USD)
+
+| Role | Monthly Rate (AMD) | Monthly Rate (USD) |
+|------|-------------------|-------------------|
+| UI/UX Designer (Mid-Senior) | 500,000 - 700,000 | $1,250 - $1,750 |
+| Full-Stack Developer (Senior) | 800,000 - 1,200,000 | $2,000 - $3,000 |
+| QA + PM (Combined) | 500,000 - 800,000 | $1,250 - $2,000 |
+
+*Based on [Glassdoor Armenia](https://www.glassdoor.com/Salaries/yerevan-armenia-software-developer-salary-SRCH_IL.0,15_IM1216_KO16,34.htm), [Salaries.am](https://salaries.am/), and [Jobicy Armenia](https://jobicy.com/salaries/am/software-developer) data for 2025-2026*
+
+---
 
 ### Development Costs by Phase
 
-| Phase | Duration | Estimated Hours | Budget Range (USD) |
-|-------|----------|-----------------|-------------------|
-| Phase 1: UI/UX Design | 4 weeks | 160 hrs | $8,000 - $12,000 |
-| Phase 2: Mobile App | 7 weeks | 560 hrs | $35,000 - $50,000 |
-| Phase 3: Integrations | 5 weeks | 400 hrs | $25,000 - $35,000 |
-| Phase 4: Testing & Launch | 3 weeks | 240 hrs | $12,000 - $18,000 |
-| **TOTAL** | **16-20 weeks** | **1,360 hrs** | **$80,000 - $115,000** |
+| Phase | Duration | Team Allocation | Cost (AMD) | Cost (USD) |
+|-------|----------|-----------------|------------|------------|
+| **Phase 1: UI/UX Design** | 4 weeks | Designer (100%), Dev (25%), QA/PM (25%) | 2,800,000 | $7,000 |
+| **Phase 2: Mobile + Web** | 7 weeks | Designer (25%), Dev (100%), QA/PM (50%) | 5,600,000 | $14,000 |
+| **Phase 3: Integrations** | 5 weeks | Dev (100%), QA/PM (75%) | 4,000,000 | $10,000 |
+| **Phase 4: Testing & Launch** | 3 weeks | Dev (50%), QA/PM (100%) | 2,000,000 | $5,000 |
 
-### Additional Costs (First Year)
+---
 
-| Item | Cost (USD/year) |
-|------|-----------------|
-| Apple Developer Account | $99 |
-| Google Play Developer Account | $25 (one-time) |
-| Cloud Infrastructure (AWS/GCP) | $500 - $1,500/month |
-| Firebase (Push, Analytics) | $0 - $500/month |
-| SMS Gateway | $200 - $500/month |
-| Sentry (Error Monitoring) | $26 - $80/month |
-| Google Maps API | $200 - $500/month |
+### Total Project Budget
 
-**Estimated Monthly Operating Cost**: $1,000 - $3,000
+| Item | Cost (AMD) | Cost (USD) |
+|------|------------|------------|
+| **Development (16-20 weeks)** | 14,400,000 - 18,000,000 | $36,000 - $45,000 |
+| **Contingency Buffer (15%)** | 2,160,000 - 2,700,000 | $5,400 - $6,750 |
+| **Tools & Licenses** | 400,000 | $1,000 |
+| **TOTAL PROJECT COST** | **16,960,000 - 21,100,000** | **$42,400 - $52,750** |
+
+---
+
+### Payment Schedule
+
+| Milestone | Payment | Amount (USD) |
+|-----------|---------|--------------|
+| Contract Signing | 30% upfront | $12,720 - $15,825 |
+| Design Approval (Week 4) | 20% | $8,480 - $10,550 |
+| App Feature Complete (Week 11) | 30% | $12,720 - $15,825 |
+| Launch Complete (Week 16-20) | 20% | $8,480 - $10,550 |
+
+---
+
+### Monthly Operating Costs (Post-Launch)
+
+| Item | Cost (AMD/month) | Cost (USD/month) |
+|------|------------------|------------------|
+| Cloud Infrastructure (AWS/GCP) | 80,000 - 200,000 | $200 - $500 |
+| Firebase (Push, Analytics) | 0 - 80,000 | $0 - $200 |
+| SMS Gateway | 40,000 - 120,000 | $100 - $300 |
+| Sentry (Error Monitoring) | 10,000 - 30,000 | $25 - $75 |
+| Google Maps API | 40,000 - 120,000 | $100 - $300 |
+| **Total Monthly** | **170,000 - 550,000** | **$425 - $1,375** |
+
+**One-time costs:**
+- Apple Developer Account: $99/year
+- Google Play Developer Account: $25 (one-time)
 
 ---
 
@@ -318,7 +370,9 @@ src/
 
 The current codebase represents significant development investment:
 
-### Backend API (95% Complete) - Estimated Value: $25,000-35,000
+### Backend API (95% Complete)
+**Estimated Value: 4,000,000 - 6,000,000 AMD ($10,000 - $15,000)**
+
 - ✅ Full authentication system (JWT, OTP)
 - ✅ Station & connector management
 - ✅ Charging session management
@@ -329,33 +383,37 @@ The current codebase represents significant development investment:
 - ✅ Redis caching layer
 - ✅ Docker deployment ready
 
-### Admin Panel (60% Complete) - Estimated Value: $8,000-12,000
+### Admin Panel (60% Complete)
+**Estimated Value: 1,600,000 - 2,400,000 AMD ($4,000 - $6,000)**
+
 - ✅ Dashboard with live statistics
 - ✅ Station management CRUD
 - ✅ Session monitoring
 - ✅ Transaction history
-- ⚠️ User management (needs completion)
 
-### Infrastructure - Estimated Value: $5,000-8,000
+### Infrastructure
+**Estimated Value: 800,000 - 1,200,000 AMD ($2,000 - $3,000)**
+
 - ✅ Database schema with migrations
 - ✅ Test data seeders
 - ✅ Docker Compose setup
 - ✅ CPO adapter architecture
 
-**Total Existing Asset Value**: ~$38,000 - $55,000
+**Total Existing Asset Value**: 6,400,000 - 9,600,000 AMD (~$16,000 - $24,000)
 
 ---
 
 ## Deliverables Summary
 
 ### Phase 1 Deliverables
-- [ ] Complete UI/UX design system
-- [ ] Figma files with all screens
+- [ ] Complete UI/UX design system (Mobile + Web)
+- [ ] Figma files with all screens (30+)
 - [ ] Interactive prototype
 - [ ] Design documentation
 
 ### Phase 2 Deliverables
 - [ ] React Native source code (iOS & Android)
+- [ ] React Web application source code
 - [ ] App binaries for testing
 - [ ] Technical documentation
 - [ ] Deployment guides
@@ -369,10 +427,10 @@ The current codebase represents significant development investment:
 ### Phase 4 Deliverables
 - [ ] Published iOS app (App Store)
 - [ ] Published Android app (Google Play)
+- [ ] Deployed web application
 - [ ] Production deployment
 - [ ] Monitoring dashboards
 - [ ] User documentation
-- [ ] Admin documentation
 
 ---
 
@@ -416,4 +474,15 @@ For questions about this proposal, please contact:
 
 **Prepared by**: EV Charging Armenia Development Team
 **Date**: January 2026
-**Version**: 1.0
+**Version**: 2.0
+
+---
+
+## Sources
+
+Salary data based on:
+- [Glassdoor Armenia Software Developer Salaries](https://www.glassdoor.com/Salaries/yerevan-armenia-software-developer-salary-SRCH_IL.0,15_IM1216_KO16,34.htm)
+- [Glassdoor Armenia UI/UX Designer Salaries](https://www.glassdoor.com/Salaries/yerevan-armenia-ui-ux-designer-salary-SRCH_IL.0,15_IM1216_KO16,30.htm)
+- [Glassdoor Armenia QA Engineer Salaries](https://www.glassdoor.com/Salaries/yerevan-armenia-qa-engineer-salary-SRCH_IL.0,15_IM1216_KO16,27.htm)
+- [Salaries.am](https://salaries.am/)
+- [Jobicy Armenia](https://jobicy.com/salaries/am/software-developer)

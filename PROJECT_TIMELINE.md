@@ -10,7 +10,7 @@ Design    │ Wireframes  │ Visual Design │
           │             │ Design System │
                         │               │
 PHASE 2               ████████████████████████████████████████████████████
-Mobile App              │ Setup    │ Map/Stations │ Charging/Wallet │ Polish │
+Mobile+Web              │ Setup    │ Map/Stations │ Charging/Wallet │ Polish │
                         │ Auth     │ Favorites    │ Push Notif.     │ i18n   │
                         │ Nav      │ Search       │ Real-time       │ Test   │
                         │          │              │                 │        │
@@ -28,108 +28,138 @@ MONTH     ├─────────────────────┼�
 
 ---
 
+## Team Allocation Timeline (3 People)
+
+```
+WEEK        1   2   3   4   5   6   7   8   9   10  11  12  13  14  15  16  17  18  19  20
+            │   │   │   │   │   │   │   │   │   │   │   │   │   │   │   │   │   │   │   │
+UI/UX       ████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+Designer    │ Full-time (100%)  │ Part-time support (25%)                   │
+            │ Wireframes        │ Design reviews, asset updates             │
+            │ Visual Design     │ Bug fixes, polish                         │
+            │ Prototypes        │                                           │
+            │                   │                                           │
+Full-Stack  ░░░░░░░░░░░░████████████████████████████████████████████████████████████████
+Developer   │ Prep (25%) │ Full-time development (100%)                               │
+            │            │ Mobile App, Web App, Integrations, Payments               │
+            │            │                                                           │
+            │            │                                                           │
+QA + PM     ████░░░░░░░░░░░░░░░░████████████████████████████████████████████████████████
+            │25%│    50%        │              75-100%                               │
+            │PM │ PM + initial  │ Testing, QA, PM, Launch coordination              │
+            │   │ test setup    │                                                   │
+
+████ = Full-time    ░░░░ = Part-time
+```
+
+---
+
 ## Detailed Weekly Breakdown
 
 ### Month 1 (Weeks 1-4): Design & Foundation
 
-| Week | Phase 1: Design | Phase 2: Mobile (Prep) |
-|------|-----------------|------------------------|
-| **Week 1** | • User research & competitive analysis | • Tech stack evaluation |
-| | • User persona development | • Project setup planning |
-| | • User journey mapping | • Architecture design |
-| | • Information architecture | |
-| **Week 2** | • Low-fidelity wireframes | • Development environment setup |
-| | • Navigation flow diagrams | • CI/CD pipeline setup |
-| | • Client review session | • Design system code prep |
-| **Week 3** | • Brand identity refinement | • React Native project init |
-| | • Color palette & typography | • Navigation skeleton |
-| | • Icon design | • API client setup |
-| **Week 4** | • High-fidelity mockups | • Authentication screens |
-| | • Interactive prototype | • Login/Register/OTP |
-| | • Design system documentation | • Token management |
-| | **Milestone: Design Approval** | |
+| Week | UI/UX Designer (100%) | Full-Stack Dev (25%) | QA+PM (25%) |
+|------|----------------------|---------------------|-------------|
+| **Week 1** | • User research | • Review requirements | • Project setup |
+| | • Competitive analysis | • Tech stack prep | • Client kickoff |
+| | • User journey mapping | • Architecture design | • Schedule planning |
+| **Week 2** | • Information architecture | • Dev environment setup | • Requirement docs |
+| | • Low-fidelity wireframes | • CI/CD pipeline | • Stakeholder alignment |
+| | • Client review session | • API client prep | • Risk assessment |
+| **Week 3** | • Brand identity | • React Native init | • Design review |
+| | • Color palette & typography | • Navigation skeleton | • Feedback coordination |
+| | • Icon design | • Auth preparation | • Progress reporting |
+| **Week 4** | • High-fidelity mockups | • Authentication screens | • Design approval |
+| | • Interactive prototype | • Login/Register/OTP | • Sprint planning |
+| | • Design system docs | • Token management | • Timeline review |
+| | **Milestone: Design Approval** | | |
 
-### Month 2 (Weeks 5-8): Core Mobile Development
+### Month 2 (Weeks 5-8): Core Development
 
-| Week | Phase 2: Mobile App | Phase 3: Integrations (Start) |
-|------|--------------------|-----------------------------|
-| **Week 5** | • Map screen implementation | • EVAN API documentation review |
-| | • Station markers | • OCPI 2.2 module setup |
-| | • Geolocation service | • Test environment access |
-| | • User location tracking | |
-| **Week 6** | • Station list view | • EVAN locations sync |
-| | • Station detail screen | • Connector status polling |
-| | • Connector display | • Real-time status updates |
-| | • Search functionality | |
-| **Week 7** | • Filters implementation | • EcoCars API integration |
-| | • Favorites feature | • Custom adapter development |
-| | • Station status updates | • Data normalization |
-| | **Milestone: Map Feature Complete** | |
-| **Week 8** | • Start charging flow | • iCharge/Amperion investigation |
-| | • Session initiation | • Partner communication |
-| | • QR code scanner | • API access requests |
+| Week | UI/UX Designer (25%) | Full-Stack Dev (100%) | QA+PM (50%) |
+|------|----------------------|----------------------|-------------|
+| **Week 5** | • Design support | • Map screen implementation | • Test case writing |
+| | • Asset exports | • Station markers | • EVAN API review |
+| | | • Geolocation service | • Partner coordination |
+| **Week 6** | • Design reviews | • Station list view | • Integration planning |
+| | • UI adjustments | • Station detail screen | • QA environment setup |
+| | | • Connector display | • Status reporting |
+| **Week 7** | • Polish feedback | • Filters & search | • Smoke testing |
+| | | • Favorites feature | • Bug tracking setup |
+| | | • WebSocket integration | • Partner communication |
+| | | **Milestone: Map Feature Complete** | |
+| **Week 8** | • Design iterations | • Start charging flow | • Feature testing |
+| | | • Session initiation | • Test documentation |
+| | | • EVAN OCPI integration start | • Progress review |
 
-### Month 3 (Weeks 9-12): Charging & Payments
+### Month 3 (Weeks 9-12): Charging, Payments & Integrations
 
-| Week | Phase 2: Mobile App | Phase 3: Integrations |
-|------|--------------------|-----------------------|
-| **Week 9** | • Real-time session monitoring | • Session commands (OCPI) |
-| | • WebSocket integration | • Start/Stop remote commands |
-| | • Live power/energy display | • CDR processing |
-| | • Session progress UI | |
-| **Week 10** | • Session completion flow | • iDram payment gateway |
-| | • Session history | • Payment API integration |
-| | • Receipt display | • Transaction handling |
-| | **Milestone: Charging Flow Complete** | |
-| **Week 11** | • Wallet screen | • Telcell payment gateway |
-| | • Balance display | • Card payment (bank gateway) |
-| | • Top-up flow | • Receipt PDF generation |
-| | • Transaction history | |
-| **Week 12** | • Push notifications | • SMS gateway integration |
-| | • Firebase setup | • OTP delivery |
-| | • Notification handlers | • Session notifications |
-| | **Milestone: Payments Complete** | |
+| Week | UI/UX Designer (25%) | Full-Stack Dev (100%) | QA+PM (75%) |
+|------|----------------------|----------------------|-------------|
+| **Week 9** | • Session UI polish | • Real-time session monitoring | • Integration testing |
+| | | • Live power/energy display | • OCPI test scenarios |
+| | | • Session progress UI | • PM: Partner meetings |
+| **Week 10** | • Wallet UI support | • Session completion flow | • End-to-end testing |
+| | | • Session history | • Payment test cases |
+| | | • EVAN integration complete | • Bug triage |
+| | | **Milestone: Charging Flow Complete** | |
+| **Week 11** | • Payment screens review | • Wallet screen | • Payment testing |
+| | | • iDram integration | • Security review |
+| | | • Top-up flow | • PM: Launch planning |
+| **Week 12** | • Final UI polish | • Telcell integration | • Full regression |
+| | | • SMS gateway | • Performance testing |
+| | | • Push notifications | • Documentation |
+| | | **Milestone: Payments Complete** | |
 
 ### Month 4 (Weeks 13-16): Polish & Launch
 
-| Week | Phase 2: Mobile App | Phase 4: Testing & Launch |
-|------|--------------------|-----------------------------|
-| **Week 13** | • Profile screen | • Unit test writing |
-| | • Settings | • Integration tests |
-| | • Language switching (hy/ru/en) | • Backend load testing |
-| | • Accessibility | |
-| **Week 14** | • Animations & transitions | • E2E testing (Detox) |
-| | • Error states | • Bug fixing sprint |
-| | • Loading states | • Performance optimization |
-| | • Offline handling | |
-| | **Milestone: Feature Complete** | |
-| **Week 15** | • iOS optimizations | • TestFlight deployment |
-| | • Android optimizations | • Internal beta testing |
-| | • App Store screenshots | • User feedback collection |
-| | • Store descriptions | |
-| **Week 16** | • Final bug fixes | • App Store submission |
-| | • Documentation | • Google Play submission |
-| | • Knowledge transfer | • Production deployment |
-| | | **Milestone: LAUNCH** |
+| Week | UI/UX Designer (25%) | Full-Stack Dev (50-100%) | QA+PM (100%) |
+|------|----------------------|-------------------------|-------------|
+| **Week 13** | • Final asset delivery | • Profile screen | • Full QA cycle |
+| | | • Settings | • Device testing |
+| | | • Multi-language (hy/ru/en) | • Bug prioritization |
+| **Week 14** | • Store screenshots | • Animations & transitions | • E2E testing |
+| | • App Store graphics | • Error states | • Performance validation |
+| | | • Offline handling | • Security audit |
+| | | **Milestone: Feature Complete** | |
+| **Week 15** | • Marketing assets | • iOS/Android optimizations | • TestFlight deployment |
+| | | • Bug fixes | • Beta testing |
+| | | | • User feedback collection |
+| **Week 16** | • Launch support | • Final bug fixes | • App Store submission |
+| | | • Production deployment | • Google Play submission |
+| | | | • Launch coordination |
+| | | | **Milestone: LAUNCH** |
 
-### Buffer Weeks (17-20): Post-Launch Support
+---
 
-| Week | Activities |
-|------|-----------|
-| **Week 17-18** | • App review responses |
-| | • Critical bug fixes |
-| | • Store listing optimization |
-| | • User onboarding support |
-| **Week 19-20** | • Performance monitoring |
-| | • User feedback implementation |
-| | • Minor feature improvements |
-| | • Documentation updates |
+## Buffer Weeks (17-20): Post-Launch Support
+
+| Week | Activities | Team Focus |
+|------|-----------|------------|
+| **Week 17-18** | • App review responses | QA+PM: Full-time |
+| | • Critical bug fixes | Developer: As needed |
+| | • Store listing optimization | Designer: As needed |
+| **Week 19-20** | • Performance monitoring | QA+PM: Part-time |
+| | • User feedback implementation | Developer: As needed |
+| | • Minor improvements | |
+
+---
+
+## Milestones & Deliverables
+
+| Milestone | Week | Deliverables | Payment Trigger |
+|-----------|------|--------------|-----------------|
+| **M1: Design Complete** | 4 | Figma files, prototype | 20% payment |
+| **M2: Map Feature Complete** | 7 | Map with stations working | - |
+| **M3: Charging Complete** | 10 | Full charging flow | - |
+| **M4: Payments Complete** | 12 | Top-up working | - |
+| **M5: Feature Complete** | 14 | All features done | 30% payment |
+| **M6: Beta Complete** | 15 | Apps in testing | - |
+| **M7: Launch** | 16 | Apps published | 20% payment |
 
 ---
 
 ## Critical Path
-
-The following items are on the critical path and must be completed on schedule:
 
 ```
 1. Design Approval (Week 4)
@@ -158,8 +188,8 @@ The following items are on the critical path and must be completed on schedule:
 | Dependency | Required By | Risk Level | Mitigation |
 |-----------|-------------|------------|------------|
 | EVAN API credentials | Week 5 | Medium | Mock data fallback |
-| EcoCars API documentation | Week 7 | Medium | Existing adapter pattern |
-| iDram merchant account | Week 10 | High | Alternative payment method |
+| EcoCars API documentation | Week 7 | Medium | Existing adapter |
+| iDram merchant account | Week 10 | High | Telcell as backup |
 | App Store developer account | Week 15 | Low | Early registration |
 | SMS gateway account | Week 12 | Medium | Console logging fallback |
 
@@ -168,50 +198,23 @@ The following items are on the critical path and must be completed on schedule:
 | Dependency | Depends On | Impact |
 |-----------|-----------|--------|
 | Mobile app screens | Design approval | Cannot start without designs |
-| Charging flow | Backend session API | Already complete |
+| Charging flow | Backend session API | ✅ Already complete |
 | Payments UI | Payment gateway integration | Parallel development possible |
 | Push notifications | Firebase project setup | Quick setup, low risk |
 
 ---
 
-## Team Allocation Timeline
+## Budget by Phase (Armenian Market Rates)
 
-```
-WEEK        1   2   3   4   5   6   7   8   9   10  11  12  13  14  15  16
-            │   │   │   │   │   │   │   │   │   │   │   │   │   │   │   │
-Designer    ████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-            │ Full-time   │ Part-time (support)                        │
-            │             │                                            │
-RN Senior   ░░░░░░░░░░░░██████████████████████████████████████████████████
-            │ Prep       │ Full-time development                       │
-            │            │                                             │
-RN Mid      ░░░░░░░░░░░░░░░░████████████████████████████████████████████
-            │            │  │ Full-time development                    │
-            │            │  │                                          │
-Backend     ░░░░░░░░░░░░░░░░████████████████████████████████████░░░░░░░░
-            │            │  │ Partner integrations    │ Support       │
-            │            │  │                         │               │
-QA          ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░████████████████████████
-            │                                    │ Testing & Launch   │
-            │                                    │                    │
+| Phase | Weeks | Designer | Developer | QA+PM | Total (USD) |
+|-------|-------|----------|-----------|-------|-------------|
+| Phase 1 | 1-4 | $6,000 | $750 | $500 | **$7,250** |
+| Phase 2 | 5-11 | $1,500 | $10,500 | $3,500 | **$15,500** |
+| Phase 3 | 8-12 | - | $7,500 | $3,750 | **$11,250** |
+| Phase 4 | 13-16 | $500 | $3,000 | $4,000 | **$7,500** |
+| **TOTAL** | 16 weeks | **$8,000** | **$21,750** | **$11,750** | **$41,500** |
 
-████ = Full-time    ░░░░ = Part-time/Support
-```
-
----
-
-## Milestones & Deliverables
-
-| Milestone | Week | Deliverables | Acceptance Criteria |
-|-----------|------|--------------|---------------------|
-| **M1: Design Complete** | 4 | Figma files, prototype | Client sign-off |
-| **M2: Auth Complete** | 5 | Login/Register working | User can create account |
-| **M3: Map Complete** | 7 | Map with stations | Can view all stations |
-| **M4: Charging Complete** | 10 | Full charging flow | Can start/stop session |
-| **M5: Payments Complete** | 12 | Top-up working | Can add funds to wallet |
-| **M6: Feature Complete** | 14 | All features done | All acceptance tests pass |
-| **M7: Beta Complete** | 15 | Apps in testing | 50+ beta testers onboarded |
-| **M8: Launch** | 16 | Apps published | Available in stores |
+*Note: Some phases overlap, reducing total duration*
 
 ---
 
@@ -243,8 +246,23 @@ QA          ░░░░░░░░░░░░░░░░░░░░░░�
 
 | Meeting | Frequency | Participants | Purpose |
 |---------|-----------|--------------|---------|
-| Daily Standup | Daily | Dev team | Progress, blockers |
-| Sprint Review | Bi-weekly | Team + Client | Demo completed work |
+| Daily Standup | Daily | All 3 team members | Progress, blockers |
+| Client Demo | Bi-weekly | Team + Client | Demo completed work |
 | Design Review | Weekly (Phase 1) | Designer + Client | Approve designs |
-| Status Report | Weekly | PM + Client | Written progress update |
-| Risk Review | Bi-weekly | PM + Tech Lead | Identify/mitigate risks |
+| Status Report | Weekly | QA/PM + Client | Written progress update |
+
+---
+
+## Key Dates Summary
+
+| Date | Milestone |
+|------|-----------|
+| Week 1 | Project Kickoff |
+| Week 4 | Design Complete & Approved |
+| Week 7 | Map Feature Working |
+| Week 10 | Charging Flow Complete |
+| Week 12 | Payment Integration Complete |
+| Week 14 | Feature Freeze |
+| Week 15 | Beta Testing Start |
+| Week 16 | Production Launch |
+| Week 20 | Post-Launch Support Complete |
