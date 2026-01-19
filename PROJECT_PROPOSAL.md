@@ -1,488 +1,366 @@
 # EV Charging Station Aggregator Platform
-## Project Proposal for Armenia
+## Complete Project Proposal - Armenia
 
 ---
 
 ## Executive Summary
 
-We propose to build a comprehensive EV charging station aggregator platform for Armenia, unifying multiple charging networks (EcoCars, EVAN, iCharge, Amperion, ChargeNet) into a single mobile and web application. The platform will feature real-time station availability, seamless payment processing, and native mobile apps for iOS and Android.
+We propose to build a comprehensive EV charging station aggregator platform for Armenia, unifying multiple charging networks (EcoCars, EVAN, iCharge, Amperion, ChargeNet) into a single mobile and web application.
 
-**Current Status**: Backend infrastructure is 95% complete. Frontend applications require full development.
-
----
-
-## Project Scope
-
-### What We Will Deliver
-
-| Component | Description |
-|-----------|-------------|
-| **React Native Mobile App** | iOS & Android native apps with maps, charging sessions, wallet |
-| **React Web Application** | Progressive Web App for browser access |
-| **Admin Dashboard** | Using existing static framework (no custom design needed) |
-| **Backend API** | ✅ Already 95% complete - production-ready |
-| **Partner Integrations** | Real API connections with charging networks |
-| **Payment Integration** | iDram, Telcell, and card processing |
+**Current Status**: Backend infrastructure is 95% complete (saves ~$8,000-10,000 in development costs).
 
 ---
 
-## Timeline Overview
+## Two Development Options
 
-### Total Estimated Duration: 16-20 Weeks
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  PHASE 1: UI/UX Design                    │████████│     4 weeks           │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  PHASE 2: React Native Mobile + Web App   │████████████████│  6-7 weeks    │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  PHASE 3: Partner Integrations            │████████████│    4-5 weeks      │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  PHASE 4: Testing & Launch                │████████│     2-3 weeks         │
-└─────────────────────────────────────────────────────────────────────────────┘
-
-Note: Phases 2 and 3 can run in parallel, reducing total time.
-```
+| Option | Timeline | Budget (USD) | Budget (AMD) |
+|--------|----------|--------------|--------------|
+| **MVP** | 3-4 months | **$12,000** | **4,680,000 ֏** |
+| **Full Product** | 6-8 months | **$28,000** | **10,920,000 ֏** |
 
 ---
 
-## Detailed Phase Breakdown
+# OPTION 1: MVP (Minimum Viable Product)
 
-### PHASE 1: UI/UX Design (4 weeks)
+## MVP Features
 
-**Objective**: Create modern, intuitive interface designs for Mobile App + Web Application
+| Feature | Included | Description |
+|---------|:--------:|-------------|
+| **Mobile App (iOS + Android)** | ✅ | React Native |
+| Map with all stations | ✅ | 5 networks on one map |
+| Filters | ✅ | By network, connector, power |
+| Station details | ✅ | Address, connectors, prices, photos |
+| Connector status | ⚠️ | Only for networks with API (EVAN) |
+| Navigation to station | ✅ | Opens Google Maps / Waze |
+| Registration / Login | ✅ | Phone + password |
+| User profile | ✅ | Name, language, settings |
+| Favorites | ✅ | Save stations |
+| Charging history | ❌ | No |
+| Wallet / Payments | ❌ | No |
+| Start/Stop charging | ❌ | Deep-link to CPO app |
+| Real-time session | ❌ | No |
+| Push notifications | ❌ | No |
+| **Web Application** | ✅ | Responsive PWA |
+| Map view | ✅ | Full-screen map |
+| Station search | ✅ | Basic search & filters |
+| User account | ✅ | Login, profile |
+| **Admin Panel** | ✅ | Basic (static framework) |
+| Station list | ✅ | View, edit |
+| Users | ✅ | View list |
+| Statistics | ⚠️ | Basic (user count, stations) |
+| **Backend** | ✅ | Already 95% complete |
+| **UI/UX Design** | ✅ | Mobile + Web screens |
 
-#### Week 1-2: Research & Wireframing
-- [ ] Competitive analysis (ChargePoint, Electromaps, PlugShare)
-- [ ] User journey mapping
-- [ ] Information architecture
-- [ ] Low-fidelity wireframes for all screens
-- [ ] Client review & feedback
+---
 
-#### Week 3-4: Visual Design
-- [ ] Brand identity refinement (colors, typography, icons)
-- [ ] High-fidelity mockups (Figma)
-- [ ] Interactive prototypes
-- [ ] Design system documentation
-- [ ] Component library specifications
-- [ ] Client approval
+## MVP: Timeline & Budget
 
-**Deliverables**:
-- Complete UI kit in Figma
-- 30+ screen designs (mobile app + web responsive)
-- Interactive prototype
-- Design system documentation
-- Asset export specifications
+| Service | Duration | Cost (USD) | Cost (AMD) |
+|---------|----------|------------|------------|
+| UI/UX Design (Mobile + Web) | 2-3 weeks | $1,500 | 585,000 ֏ |
+| Mobile App Development | 6-8 weeks | $4,500 | 1,755,000 ֏ |
+| Web App Development | 3-4 weeks | $2,000 | 780,000 ֏ |
+| Backend completion + EVAN integration | 2-3 weeks | $1,500 | 585,000 ֏ |
+| Admin Panel (basic) | 1-2 weeks | $800 | 312,000 ֏ |
+| Testing & QA | 2 weeks | $1,000 | 390,000 ֏ |
+| App Store publishing | 1 week | $700 | 273,000 ֏ |
+| **TOTAL** | **3-4 months** | **$12,000** | **4,680,000 ֏** |
 
-**Screens to Design**:
+---
+
+## MVP: What You Get
+
 ```
-Mobile App (20+ screens):
-├── Onboarding (3 slides)
-├── Authentication
-│   ├── Login
-│   ├── Register
-│   ├── OTP Verification
-│   └── Forgot Password
-├── Main Navigation
-│   ├── Map (home screen)
-│   ├── Station List View
-│   ├── Active Session
-│   ├── Favorites
-│   └── Profile
-├── Station Details
-│   ├── Overview
-│   ├── Connectors list
-│   └── Reviews
-├── Charging Flow
-│   ├── Start Charging
-│   ├── Session Progress
-│   └── Session Complete
-├── Wallet
-│   ├── Balance
-│   ├── Top-up
-│   └── Transaction History
-└── Settings
-    ├── Language
-    ├── Notifications
-    └── Support
+✅ Mobile App (iOS + Android)
+   ├── Interactive map with all charging stations
+   ├── Station details with photos & prices
+   ├── Search & filters
+   ├── User registration & login
+   ├── Favorites list
+   └── Navigation to stations
 
-Web Application (10+ screens):
-├── Landing Page
-├── Map View (full-screen)
-├── Station Details Modal
-├── Login / Register
-├── User Dashboard
-├── Wallet & Transactions
-├── Session History
-└── Profile Settings
+✅ Web Application
+   ├── Responsive design (mobile + desktop)
+   ├── Map view with stations
+   ├── Station search
+   └── User account
+
+✅ Admin Panel (Basic)
+   ├── Station management
+   └── User list
+
+✅ Backend API (already built)
+   ├── All endpoints ready
+   ├── EVAN integration (OCPI)
+   └── Database with test data
 ```
 
 ---
 
-### PHASE 2: React Native Mobile + Web App (6-7 weeks)
+## MVP: What You DON'T Get
 
-**Objective**: Build native iOS/Android apps and responsive web application with clean architecture
-
-#### Week 1-2: Project Setup & Core Infrastructure
-- [ ] React Native project initialization (Expo or bare workflow)
-- [ ] Web app setup (React + Vite)
-- [ ] Shared component library
-- [ ] Navigation setup (React Navigation 6)
-- [ ] State management (Zustand/Redux Toolkit)
-- [ ] API client with TypeScript
-- [ ] Authentication flow implementation
-- [ ] Secure token storage
-
-#### Week 3-4: Map & Station Features
-- [ ] Interactive map (react-native-maps / Leaflet for web)
-- [ ] Geolocation services
-- [ ] Station markers with clustering
-- [ ] Station list view
-- [ ] Station detail screen
-- [ ] Connector status display
-- [ ] Favorites functionality
-- [ ] Search & filters
-
-#### Week 5-6: Charging & Wallet Features
-- [ ] Start charging flow
-- [ ] Real-time session monitoring (WebSocket)
-- [ ] Session history
-- [ ] Wallet balance display
-- [ ] Top-up flow (payment gateway integration)
-- [ ] Transaction history
-- [ ] Push notifications (Firebase)
-
-#### Week 7: Polish & Platform-specific
-- [ ] iOS specific optimizations
-- [ ] Android specific optimizations
-- [ ] Web responsive design
-- [ ] Animations & transitions
-- [ ] Offline mode handling
-- [ ] Error states & loading states
-- [ ] Accessibility compliance
-- [ ] Multi-language support (hy, ru, en)
-
-**Tech Stack**:
 ```
-Mobile:
-  Framework:     React Native 0.73+ / Expo SDK 50+
-  Language:      TypeScript 5.x
-  Navigation:    React Navigation 6
-  State:         Zustand 4.x
-  Maps:          react-native-maps (Google Maps)
-  WebSocket:     Socket.io-client
-  HTTP Client:   Axios + React Query
-  Storage:       react-native-mmkv
-  Auth:          react-native-keychain
-  Push:          Firebase Cloud Messaging
-  Animations:    Reanimated 3
-  UI Library:    React Native Paper / NativeWind
-
-Web:
-  Framework:     React 18 + Vite
-  Styling:       TailwindCSS
-  Maps:          Leaflet / Google Maps
-  State:         Zustand (shared with mobile)
-```
-
-**Architecture**:
-```
-src/
-├── app/                    # App entry, providers
-├── screens/               # Screen components
-├── components/            # Reusable UI components
-│   ├── common/           # Buttons, inputs, cards
-│   ├── map/              # Map-related components
-│   ├── station/          # Station components
-│   └── session/          # Session components
-├── navigation/           # Navigation configuration
-├── services/             # API, WebSocket, storage
-├── store/                # Zustand stores
-├── hooks/                # Custom hooks
-├── utils/                # Helpers, constants
-├── i18n/                 # Translations
-└── types/                # TypeScript types
+❌ In-app payments (wallet, top-up)
+❌ Start/Stop charging from app
+❌ Real-time charging session monitoring
+❌ Push notifications
+❌ QR code scanner
+❌ Ratings & reviews
+❌ Multiple CPO integrations (only EVAN)
+❌ SMS OTP verification
+❌ Financial reports in admin
 ```
 
 ---
 
-### PHASE 3: Partner Integrations (4-5 weeks)
+# OPTION 2: FULL PRODUCT
 
-**Objective**: Connect to real charging network APIs
+## Full Product Features
 
-#### Week 1-2: OCPI 2.2 Implementation
-- [ ] EVAN network integration (OCPI 2.2 protocol)
-- [ ] Location sync (stations, connectors)
-- [ ] Real-time status updates
-- [ ] Session management (CDRs)
-- [ ] Tariff information sync
-
-#### Week 3: Custom API Integrations
-- [ ] EcoCars REST API integration
-- [ ] iCharge integration (if API available)
-- [ ] Amperion integration (if API available)
-- [ ] ChargeNet integration (if API available)
-
-#### Week 4-5: Payment Gateway Integration
-- [ ] iDram payment integration
-- [ ] Telcell payment integration
-- [ ] Card payment (via local bank gateway)
-- [ ] Receipt generation (PDF)
-- [ ] SMS notifications (Twilio/local provider)
-
-**Partner Integration Requirements**:
-
-| Partner | Protocol | Status | Required From Partner |
-|---------|----------|--------|----------------------|
-| EVAN | OCPI 2.2 | Ready to integrate | API credentials, endpoint URL |
-| EcoCars | Custom REST | Ready to integrate | API documentation, credentials |
-| iCharge | TBD | Need contact | API access |
-| Amperion | TBD | Need contact | API access |
-| ChargeNet | TBD | Need contact | API access |
-
----
-
-### PHASE 4: Testing & Launch (2-3 weeks)
-
-#### Week 1: Quality Assurance
-- [ ] Unit testing (Jest, React Native Testing Library)
-- [ ] Integration testing
-- [ ] E2E testing (Detox)
-- [ ] Performance testing
-- [ ] Security audit
-- [ ] Load testing (backend)
-
-#### Week 2: Beta Testing
-- [ ] Internal beta testing
-- [ ] TestFlight (iOS) deployment
-- [ ] Google Play Internal Testing
-- [ ] Bug fixes and optimizations
-- [ ] User feedback collection
-
-#### Week 3: Production Launch
-- [ ] App Store submission
-- [ ] Google Play submission
-- [ ] Web app deployment
-- [ ] Production deployment
-- [ ] Monitoring setup (Sentry, analytics)
-- [ ] Launch support
+| Feature | Included | Description |
+|---------|:--------:|-------------|
+| **Mobile App (iOS + Android)** | ✅ | React Native |
+| Map with all stations | ✅ | All 5+ networks |
+| Advanced filters | ✅ | Network, connector, power, availability |
+| Station details | ✅ | Address, connectors, prices, photos, rating |
+| Real-time connector status | ✅ | For all integrated networks |
+| Built-in navigation | ✅ | In-app + Google Maps / Waze |
+| Registration / Login | ✅ | Phone + OTP verification |
+| User profile | ✅ | Full profile with verification |
+| Favorites | ✅ | Save stations |
+| Charging history | ✅ | All sessions with details |
+| Wallet | ✅ | Balance, top-up, withdraw |
+| Payments | ✅ | iDram, Telcell, Visa/MC |
+| Start/Stop charging | ✅ | Directly from app |
+| Real-time session | ✅ | kWh, power, cost live |
+| Push notifications | ✅ | Charging complete, low balance |
+| QR scanner | ✅ | Scan station to start |
+| Ratings & reviews | ✅ | Rate stations |
+| Multi-language | ✅ | AM, RU, EN |
+| Dark mode | ✅ | Dark theme |
+| **Web Application** | ✅ | Full PWA |
+| Full map experience | ✅ | All features |
+| User dashboard | ✅ | Sessions, wallet, history |
+| **Admin Panel** | ✅ | Full (static framework) |
+| Dashboard | ✅ | Charts, statistics |
+| Stations CRUD | ✅ | Full management |
+| Users | ✅ | Management, support |
+| CPO Networks | ✅ | Integration monitoring |
+| Finances | ✅ | Transactions, reports |
+| Notifications | ✅ | Push/email broadcasts |
+| Settings | ✅ | Tariffs, commissions |
+| **Backend** | ✅ | Production-ready |
+| WebSocket | ✅ | Real-time updates |
+| CPO Integrations | ✅ | 3-4 networks |
+| Payment gateway | ✅ | iDram, cards |
+| SMS service | ✅ | OTP verification |
+| **UI/UX Design** | ✅ | Full design system |
 
 ---
 
-## Team Structure
+## Full Product: Timeline & Budget
 
-### Core Team (3 People)
-
-| Role | Responsibility | Allocation |
-|------|----------------|------------|
-| **UI/UX Designer** | Mobile + Web design, design system, prototypes | Full-time Phase 1, part-time support Phase 2-4 |
-| **Full-Stack Developer** | React Native, React Web, backend integrations, payments | Full-time Phase 2-4 |
-| **QA Engineer + Project Manager** | Testing, quality assurance, client communication, coordination | Part-time Phase 1-2, full-time Phase 3-4 |
-
----
-
-## Budget Estimation (Armenian Market Rates)
-
-### Monthly Salary Rates (AMD/USD)
-
-| Role | Monthly Rate (AMD) | Monthly Rate (USD) |
-|------|-------------------|-------------------|
-| UI/UX Designer (Mid-Senior) | 500,000 - 700,000 | $1,250 - $1,750 |
-| Full-Stack Developer (Senior) | 800,000 - 1,200,000 | $2,000 - $3,000 |
-| QA + PM (Combined) | 500,000 - 800,000 | $1,250 - $2,000 |
-
-*Based on [Glassdoor Armenia](https://www.glassdoor.com/Salaries/yerevan-armenia-software-developer-salary-SRCH_IL.0,15_IM1216_KO16,34.htm), [Salaries.am](https://salaries.am/), and [Jobicy Armenia](https://jobicy.com/salaries/am/software-developer) data for 2025-2026*
+| Service | Duration | Cost (USD) | Cost (AMD) |
+|---------|----------|------------|------------|
+| UI/UX Design (Full) | 4 weeks | $2,500 | 975,000 ֏ |
+| Mobile App Development | 10-12 weeks | $8,000 | 3,120,000 ֏ |
+| Web App Development | 4-5 weeks | $3,000 | 1,170,000 ֏ |
+| Backend + WebSocket + Real-time | 3-4 weeks | $2,500 | 975,000 ֏ |
+| CPO Integrations (EVAN, EcoCars, +2) | 4-5 weeks | $3,000 | 1,170,000 ֏ |
+| Payment System (iDram, Telcell, Cards) | 3 weeks | $2,000 | 780,000 ֏ |
+| Push Notifications + SMS | 1-2 weeks | $1,000 | 390,000 ֏ |
+| Admin Panel (Full) | 3-4 weeks | $2,500 | 975,000 ֏ |
+| Testing & QA | 3-4 weeks | $2,000 | 780,000 ֏ |
+| DevOps + Deployment | 1-2 weeks | $1,000 | 390,000 ֏ |
+| App Store publishing | 1 week | $500 | 195,000 ֏ |
+| **TOTAL** | **6-8 months** | **$28,000** | **10,920,000 ֏** |
 
 ---
 
-### Development Costs by Phase
+# COMPARISON TABLE
 
-| Phase | Duration | Team Allocation | Cost (AMD) | Cost (USD) |
-|-------|----------|-----------------|------------|------------|
-| **Phase 1: UI/UX Design** | 4 weeks | Designer (100%), Dev (25%), QA/PM (25%) | 2,800,000 | $7,000 |
-| **Phase 2: Mobile + Web** | 7 weeks | Designer (25%), Dev (100%), QA/PM (50%) | 5,600,000 | $14,000 |
-| **Phase 3: Integrations** | 5 weeks | Dev (100%), QA/PM (75%) | 4,000,000 | $10,000 |
-| **Phase 4: Testing & Launch** | 3 weeks | Dev (50%), QA/PM (100%) | 2,000,000 | $5,000 |
-
----
-
-### Total Project Budget
-
-| Item | Cost (AMD) | Cost (USD) |
-|------|------------|------------|
-| **Development (16-20 weeks)** | 14,400,000 - 18,000,000 | $36,000 - $45,000 |
-| **Contingency Buffer (15%)** | 2,160,000 - 2,700,000 | $5,400 - $6,750 |
-| **Tools & Licenses** | 400,000 | $1,000 |
-| **TOTAL PROJECT COST** | **16,960,000 - 21,100,000** | **$42,400 - $52,750** |
+| Parameter | MVP | Full Product |
+|-----------|:---:|:------------:|
+| **Timeline** | 3-4 months | 6-8 months |
+| **Budget (USD)** | $12,000 | $28,000 |
+| **Budget (AMD)** | 4,680,000 ֏ | 10,920,000 ֏ |
+| Mobile App | ✅ Basic | ✅ Full |
+| Web App | ✅ Basic | ✅ Full |
+| Admin Panel | ✅ Basic | ✅ Full |
+| Payments | ❌ | ✅ |
+| Charging Control | ❌ | ✅ |
+| Real-time | ❌ | ✅ |
+| CPO Integrations | 1 network | 3-4 networks |
+| Push Notifications | ❌ | ✅ |
+| Ready for monetization | ❌ | ✅ |
 
 ---
 
-### Payment Schedule
+# RECOMMENDED: PHASED APPROACH
 
-| Milestone | Payment | Amount (USD) |
-|-----------|---------|--------------|
-| Contract Signing | 30% upfront | $12,720 - $15,825 |
-| Design Approval (Week 4) | 20% | $8,480 - $10,550 |
-| App Feature Complete (Week 11) | 30% | $12,720 - $15,825 |
-| Launch Complete (Week 16-20) | 20% | $8,480 - $10,550 |
+## Phase 1 → Phase 2 → Phase 3
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  PHASE 1: MVP                                                       │
+│  $12,000 • 3-4 months                                              │
+│  → Launch app, get users, validate market                          │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│  PHASE 2: Add Payments                                              │
+│  +$8,000 • 2 months                                                │
+│  → Wallet, iDram, Telcell, Start monetization                      │
+└─────────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│  PHASE 3: Full Features                                             │
+│  +$8,000 • 2 months                                                │
+│  → Real-time, more CPOs, push notifications                        │
+└─────────────────────────────────────────────────────────────────────┘
+
+TOTAL: $28,000 over 7-8 months (same as Full Product)
+```
+
+### Why Phased Approach?
+
+| Benefit | Description |
+|---------|-------------|
+| **Lower risk** | Start with $12K, not $28K |
+| **Faster to market** | Launch in 3-4 months |
+| **User feedback** | Real users guide development |
+| **Cash flow** | Start earning before full investment |
+| **Flexibility** | Adjust features based on demand |
 
 ---
 
-### Monthly Operating Costs (Post-Launch)
+# PAYMENT SCHEDULE
 
-| Item | Cost (AMD/month) | Cost (USD/month) |
-|------|------------------|------------------|
-| Cloud Infrastructure (AWS/GCP) | 80,000 - 200,000 | $200 - $500 |
-| Firebase (Push, Analytics) | 0 - 80,000 | $0 - $200 |
-| SMS Gateway | 40,000 - 120,000 | $100 - $300 |
-| Sentry (Error Monitoring) | 10,000 - 30,000 | $25 - $75 |
-| Google Maps API | 40,000 - 120,000 | $100 - $300 |
-| **Total Monthly** | **170,000 - 550,000** | **$425 - $1,375** |
+## MVP ($12,000)
 
-**One-time costs:**
-- Apple Developer Account: $99/year
-- Google Play Developer Account: $25 (one-time)
+| Milestone | Amount | When |
+|-----------|--------|------|
+| Project start | $3,600 (30%) | Contract signing |
+| Design approved | $2,400 (20%) | Week 3 |
+| App ready for testing | $3,600 (30%) | Week 10 |
+| Launch complete | $2,400 (20%) | Week 14 |
+
+## Full Product ($28,000)
+
+| Milestone | Amount | When |
+|-----------|--------|------|
+| Project start | $5,600 (20%) | Contract signing |
+| Design approved | $2,800 (10%) | Week 4 |
+| MVP features ready | $5,600 (20%) | Month 3 |
+| Payments working | $5,600 (20%) | Month 5 |
+| All integrations done | $5,600 (20%) | Month 7 |
+| Launch complete | $2,800 (10%) | Month 8 |
 
 ---
 
-## Risk Assessment
+# MONTHLY COSTS AFTER LAUNCH
 
-### Technical Risks
+| Item | MVP | Full Product |
+|------|-----|--------------|
+| Server (VPS) | $25-40 | $50-80 |
+| Database (managed) | $15-25 | $30-50 |
+| Redis | Included | $15-25 |
+| Firebase (push) | Free | Free tier |
+| Google Maps API | $0-30 | $30-60 |
+| SMS (OTP) | N/A | $20-50 |
+| Domain + SSL | $5 | $5 |
+| **Total/month** | **$45-100** | **$150-270** |
 
-| Risk | Impact | Mitigation |
+**Annual operating cost**: $540-1,200 (MVP) / $1,800-3,240 (Full)
+
+---
+
+# TEAM
+
+| Role | Person | Allocation |
 |------|--------|------------|
-| Partner API delays | High | Start with mock data, parallel development |
-| App Store rejection | Medium | Follow guidelines, allow review buffer |
-| Payment gateway delays | High | Alternative gateway backup, phased rollout |
-| OCPI compatibility issues | Medium | Thorough testing with partner sandbox |
+| **UI/UX Designer** | 1 | Full-time Phase 1, part-time after |
+| **Full-Stack Developer** | 1 | Full-time throughout |
+| **QA + Project Manager** | 1 | Part-time → Full-time |
 
-### Business Risks
-
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Partner agreement delays | High | Early engagement, legal support |
-| Competitive market entry | Medium | Fast-to-market approach, unique features |
-| User adoption | Medium | Marketing plan, incentive programs |
+**Total team**: 3 people
 
 ---
 
-## What's Already Built (Asset Value)
+# WHAT'S ALREADY BUILT (INCLUDED FREE)
 
-The current codebase represents significant development investment:
+The backend is 95% complete. This saves you ~$8,000-10,000:
 
-### Backend API (95% Complete)
-**Estimated Value: 4,000,000 - 6,000,000 AMD ($10,000 - $15,000)**
-
-- ✅ Full authentication system (JWT, OTP)
-- ✅ Station & connector management
-- ✅ Charging session management
-- ✅ Wallet & transaction system
-- ✅ OCPP 1.6J charge point integration
-- ✅ WebSocket real-time updates
-- ✅ PostgreSQL + PostGIS database
-- ✅ Redis caching layer
-- ✅ Docker deployment ready
-
-### Admin Panel (60% Complete)
-**Estimated Value: 1,600,000 - 2,400,000 AMD ($4,000 - $6,000)**
-
-- ✅ Dashboard with live statistics
-- ✅ Station management CRUD
-- ✅ Session monitoring
-- ✅ Transaction history
-
-### Infrastructure
-**Estimated Value: 800,000 - 1,200,000 AMD ($2,000 - $3,000)**
-
-- ✅ Database schema with migrations
-- ✅ Test data seeders
-- ✅ Docker Compose setup
-- ✅ CPO adapter architecture
-
-**Total Existing Asset Value**: 6,400,000 - 9,600,000 AMD (~$16,000 - $24,000)
+| Component | Status | Value |
+|-----------|--------|-------|
+| User authentication (JWT, OTP) | ✅ Ready | $1,500 |
+| Station & connector API | ✅ Ready | $2,000 |
+| Charging session management | ✅ Ready | $2,000 |
+| Wallet & transactions | ✅ Ready | $1,500 |
+| OCPP charge point integration | ✅ Ready | $1,500 |
+| WebSocket real-time | ✅ Ready | $1,000 |
+| PostgreSQL + PostGIS database | ✅ Ready | $500 |
+| Redis caching | ✅ Ready | $300 |
+| Docker deployment | ✅ Ready | $300 |
+| **Total saved** | | **~$10,600** |
 
 ---
 
-## Deliverables Summary
+# FINAL PRICING SUMMARY
 
-### Phase 1 Deliverables
-- [ ] Complete UI/UX design system (Mobile + Web)
-- [ ] Figma files with all screens (30+)
-- [ ] Interactive prototype
-- [ ] Design documentation
+| Option | Timeline | Price (USD) | Price (AMD) |
+|--------|----------|-------------|-------------|
+| **MVP** | 3-4 months | **$12,000** | **4,680,000 ֏** |
+| **Full Product** | 6-8 months | **$28,000** | **10,920,000 ֏** |
+| **Phased (MVP → Full)** | 7-8 months | **$28,000** | **10,920,000 ֏** |
 
-### Phase 2 Deliverables
-- [ ] React Native source code (iOS & Android)
+---
+
+# DELIVERABLES
+
+## MVP Deliverables
+- [ ] UI/UX designs (Figma) - 20+ screens
+- [ ] React Native source code (iOS + Android)
 - [ ] React Web application source code
-- [ ] App binaries for testing
-- [ ] Technical documentation
-- [ ] Deployment guides
-
-### Phase 3 Deliverables
-- [ ] Partner integration modules
-- [ ] Payment gateway integration
-- [ ] SMS notification system
-- [ ] Integration test reports
-
-### Phase 4 Deliverables
 - [ ] Published iOS app (App Store)
 - [ ] Published Android app (Google Play)
 - [ ] Deployed web application
-- [ ] Production deployment
-- [ ] Monitoring dashboards
-- [ ] User documentation
+- [ ] Basic admin panel
+- [ ] Technical documentation
+- [ ] 2 weeks post-launch support
+
+## Full Product Deliverables
+- [ ] UI/UX designs (Figma) - 35+ screens + design system
+- [ ] React Native source code (iOS + Android)
+- [ ] React Web application source code
+- [ ] Full admin panel
+- [ ] Payment gateway integration
+- [ ] 3-4 CPO network integrations
+- [ ] Push notification system
+- [ ] SMS OTP system
+- [ ] Published iOS app (App Store)
+- [ ] Published Android app (Google Play)
+- [ ] Deployed web application
+- [ ] Technical documentation
+- [ ] 4 weeks post-launch support
 
 ---
 
-## Success Metrics
+# RECOMMENDATION
 
-### Launch Metrics (First 3 Months)
-- App downloads: 1,000+
-- Active users: 500+
-- Charging sessions: 200+
-- App Store rating: 4.0+
-
-### Growth Metrics (First Year)
-- Active users: 5,000+
-- Monthly charging sessions: 1,000+
-- Partner networks integrated: 4+
-- Revenue from transactions: Break-even
+> **Start with MVP ($12,000)** → Launch in 3-4 months → Get real users → Add payments when needed
+>
+> This approach minimizes risk and gets you to market faster. You can always upgrade to full product based on user demand.
 
 ---
 
-## Next Steps
-
-1. **Review & Approve Proposal** - Client feedback and approval
-2. **Sign Agreement** - Contract and payment terms
-3. **Kick-off Meeting** - Team introduction, timeline confirmation
-4. **Design Sprint** - Begin Phase 1 immediately
-5. **Partner Outreach** - Start API access negotiations in parallel
-
----
-
-## Contact & Support
-
-For questions about this proposal, please contact:
+# CONTACT
 
 **Project Lead**: [Your Name]
 **Email**: [your.email@company.com]
-**Phone**: [+374 XX XXX XXX]
+**Phone**: +374 XX XXX XXX
 
----
+*This proposal is valid for 30 days.*
 
-*This proposal is valid for 30 days from the date of issue.*
-
-**Prepared by**: EV Charging Armenia Development Team
 **Date**: January 2026
-**Version**: 2.0
-
----
-
-## Sources
-
-Salary data based on:
-- [Glassdoor Armenia Software Developer Salaries](https://www.glassdoor.com/Salaries/yerevan-armenia-software-developer-salary-SRCH_IL.0,15_IM1216_KO16,34.htm)
-- [Glassdoor Armenia UI/UX Designer Salaries](https://www.glassdoor.com/Salaries/yerevan-armenia-ui-ux-designer-salary-SRCH_IL.0,15_IM1216_KO16,30.htm)
-- [Glassdoor Armenia QA Engineer Salaries](https://www.glassdoor.com/Salaries/yerevan-armenia-qa-engineer-salary-SRCH_IL.0,15_IM1216_KO16,27.htm)
-- [Salaries.am](https://salaries.am/)
-- [Jobicy Armenia](https://jobicy.com/salaries/am/software-developer)
+**Version**: 3.0
